@@ -19,4 +19,7 @@ export class StudentService {
   async deleteStudent(id) {
     return this.repo.delete(id);
   }
+  async findByEmail(email) {
+    return this.repo.findByEmail(email);
+  }
 }

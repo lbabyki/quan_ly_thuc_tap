@@ -4,7 +4,6 @@ import {
   registerValidator,
   loginValidator,
 } from "../../bll/validators/auth.validator.js";
-
 const authService = new AuthService();
 export class AuthController {
   static async register(req, res) {
@@ -25,7 +24,6 @@ export class AuthController {
       return sendError(res, { message: err.message });
     }
   }
-
   static async login(req, res) {
     try {
       const { error } = loginValidator.validate(req.body);
@@ -40,10 +38,8 @@ export class AuthController {
       return sendError(res, { message: err.message });
     }
   }
-
   static async profile(req, res) {
     try {
-      // req.user set by auth middleware
       const user = req.user;
       return sendSuccess(res, { data: user });
     } catch (err) {
