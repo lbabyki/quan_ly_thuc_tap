@@ -1,6 +1,8 @@
 import { jest } from "@jest/globals";
 import request from "supertest";
 import app from "../src/app.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 jest.setTimeout(20000);
 

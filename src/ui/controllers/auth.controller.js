@@ -12,7 +12,7 @@ export const register = async (req, res, next) => {
 
     const currentUser = req.user || null;
     const { user, token } = await AuthService.register(req.body, currentUser);
-    successResponse(res, { user, token }, 201);
+    sendSuccess(res, { user, token }, 201);
   } catch (err) {
     next(err);
   }
