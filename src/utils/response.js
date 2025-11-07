@@ -4,7 +4,6 @@ export function sendSuccess(
 ) {
   return res.status(status).json({ success: true, message, data });
 }
-
 export function sendError(
   res,
   { status = 500, message = "Server Error", details = null } = {}

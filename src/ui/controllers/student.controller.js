@@ -1,23 +1,16 @@
 import { sendSuccess, sendError } from "../../utils/response.js";
 import { StudentService } from "../../bll/services/student.service.js";
-import { studentValidator } from "../../bll/validators/student.validator.js";
 
 const studentService = new StudentService();
-
 export class StudentController {
   static async create(req, res) {
     try {
-      const { error } = studentValidator.validate(req.body);
-      if (error)
-        return sendError(res, {
-          status: 400,
-          message: error.details[0].message,
-        });
-
+      // create via admin or registration flow; here we expect body is ready
       const student = await studentService.createStudent(req.body);
+      student.password = undefined;
       return sendSuccess(res, {
         status: 201,
-        message: "Student created successfully",
+        message: "Student created",
         data: student,
       });
     } catch (err) {
@@ -27,8 +20,8 @@ export class StudentController {
 
   static async getAll(req, res) {
     try {
-      const students = await studentService.getAllStudents();
-      return sendSuccess(res, { data: students });
+      const data = await studentService.getAllStudents();
+      return sendSuccess(res, { data });
     } catch (err) {
       return sendError(res, { message: err.message });
     }
@@ -36,10 +29,10 @@ export class StudentController {
 
   static async getById(req, res) {
     try {
-      const student = await studentService.getStudentById(req.params.id);
-      if (!student)
-        return sendError(res, { status: 404, message: "Student not found" });
-      return sendSuccess(res, { data: student });
+      const data = await studentService.getStudentById(req.params.id);
+      if (!data) return sendError(res, { status: 404, message: "Not found" });
+      data.password = undefined;
+      return sendSuccess(res, { data });
     } catch (err) {
       return sendError(res, { message: err.message });
     }
@@ -47,13 +40,10 @@ export class StudentController {
 
   static async update(req, res) {
     try {
-      const student = await studentService.updateStudent(
-        req.params.id,
-        req.body
-      );
-      if (!student)
-        return sendError(res, { status: 404, message: "Student not found" });
-      return sendSuccess(res, { message: "Student updated", data: student });
+      const data = await studentService.updateStudent(req.params.id, req.body);
+      if (!data) return sendError(res, { status: 404, message: "Not found" });
+      data.password = undefined;
+      return sendSuccess(res, { message: "Updated", data });
     } catch (err) {
       return sendError(res, { message: err.message });
     }
@@ -61,10 +51,9 @@ export class StudentController {
 
   static async delete(req, res) {
     try {
-      const student = await studentService.deleteStudent(req.params.id);
-      if (!student)
-        return sendError(res, { status: 404, message: "Student not found" });
-      return sendSuccess(res, { message: "Student deleted" });
+      const data = await studentService.deleteStudent(req.params.id);
+      if (!data) return sendError(res, { status: 404, message: "Not found" });
+      return sendSuccess(res, { message: "Deleted" });
     } catch (err) {
       return sendError(res, { message: err.message });
     }

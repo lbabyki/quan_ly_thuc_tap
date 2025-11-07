@@ -14,6 +14,13 @@ const studentSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    // Auth fields
+    password: { type: String, required: true },
+    role: {
+      type: String,
+      enum: ["student", "lecturer", "company", "admin"],
+      default: "student",
+    },
   },
   { timestamps: true }
 );

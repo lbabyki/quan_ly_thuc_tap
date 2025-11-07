@@ -4,24 +4,19 @@ export class StudentService {
   constructor() {
     this.repo = new StudentRepository();
   }
-
   async createStudent(data) {
-    return await this.repo.create(data);
+    return this.repo.create(data);
   }
-
   async getAllStudents() {
-    return await this.repo.findAll();
+    return this.repo.find();
   }
-
   async getStudentById(id) {
-    return await this.repo.findById(id);
+    return this.repo.findById(id);
   }
-
   async updateStudent(id, data) {
-    return await this.repo.update(id, data);
+    return this.repo.update(id, data);
   }
-
   async deleteStudent(id) {
-    return await this.repo.delete(id);
+    return this.repo.delete(id);
   }
 }

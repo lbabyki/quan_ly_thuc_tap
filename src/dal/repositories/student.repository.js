@@ -1,23 +1,15 @@
+import { BaseRepository } from "../../core/base/BaseRepository.js";
 import Student from "../models/student.model.js";
 
-export class StudentRepository {
-  async create(data) {
-    return await Student.create(data);
+export class StudentRepository extends BaseRepository {
+  constructor() {
+    super(Student);
   }
-
-  async findAll() {
-    return await Student.find();
+  // add extra repo methods if needed
+  async findByEmail(email) {
+    return this.model.findOne({ email });
   }
-
-  async findById(id) {
-    return await Student.findById(id);
-  }
-
-  async update(id, data) {
-    return await Student.findByIdAndUpdate(id, data, { new: true });
-  }
-
-  async delete(id) {
-    return await Student.findByIdAndDelete(id);
+  async findByStudentCode(code) {
+    return this.model.findOne({ studentCode: code });
   }
 }
