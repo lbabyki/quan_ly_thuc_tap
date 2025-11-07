@@ -1,30 +1,37 @@
-import { StudentRepository } from "../../dal/repositories/student.repository.js";
+import Student from "../../dal/models/student.model.js";
 import { hashPassword, comparePassword } from "../../utils/hash.js";
-import { signToken } from "../../utils/token.js";
+import { signToken as generateToken } from "../../utils/token.js";
+import errorHandler from "../../middleware/error.middleware.js";
 
 export class AuthService {
-  constructor() {
-    this.repo = new StudentRepository();
-  }
-  async register(payload) {
-    const exists = await this.repo.findOne({
-      $or: [{ email: payload.email }, { studentCode: payload.studentCode }],
-    });
-    if (exists) throw new Error("Email or studentCode already taken");
-    const hashed = await hashPassword(payload.password);
-    const userData = { ...payload, password: hashed };
-    const user = await this.repo.create(userData);
-    user.password = undefined;
-    const token = signToken({ id: user._id, role: user.role });
+  static async register(data, currentUser) {
+    const { name, email, password, role = "student" } = data;
+
+    // Kiểm tra quyền tạo tài khoản
+    if (role !== "student" && (!currentUser || currentUser.role !== "admin")) {
+      throw new errorHandler("Only admin can create non-student accounts", 403);
+    }
+
+    const existing = await Student.findOne({ email });
+    if (existing) throw new errorHandler("Email already registered", 400);
+
+    const hashed = await hashPassword(password);
+    const user = await Student.create({ name, email, password: hashed, role });
+    const token = generateToken({ id: user._id, role: user.role });
+
     return { user, token };
   }
-  async login({ email, password }) {
-    const user = await this.repo.findByEmail(email);
-    if (!user) throw new Error("Invalid credentials");
-    const ok = await comparePassword(password, user.password);
-    if (!ok) throw new Error("Invalid credentials");
-    user.password = undefined;
-    const token = signToken({ id: user._id, role: user.role });
+
+  static async login(data) {
+    const { email, password } = data;
+
+    const user = await Student.findOne({ email });
+    if (!user) throw new AppError("User not found", 404);
+
+    const valid = await comparePassword(password, user.password);
+    if (!valid) throw new AppError("Invalid credentials", 401);
+
+    const token = generateToken({ id: user._id, role: user.role });
     return { user, token };
   }
 }

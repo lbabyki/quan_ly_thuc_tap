@@ -40,4 +40,16 @@ export class ProgressController {
       return sendError(res, { message: err.message });
     }
   }
+  static async listProgressByWeek(req, res) {
+    try {
+      const { week } = req.params;
+      const data = await progressService.listByStudentAndWeek(
+        req.user.id,
+        week
+      );
+      return successResponse(res, data);
+    } catch (err) {
+      return errorResponse(res, err.message);
+    }
+  }
 }

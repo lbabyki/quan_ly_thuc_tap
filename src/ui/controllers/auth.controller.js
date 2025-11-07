@@ -1,49 +1,31 @@
-import { sendSuccess, sendError } from "../../utils/response.js";
 import { AuthService } from "../../bll/services/auth.service.js";
 import {
   registerValidator,
   loginValidator,
 } from "../../bll/validators/auth.validator.js";
-const authService = new AuthService();
-export class AuthController {
-  static async register(req, res) {
-    try {
-      const { error } = registerValidator.validate(req.body);
-      if (error)
-        return sendError(res, {
-          status: 400,
-          message: error.details[0].message,
-        });
-      const result = await authService.register(req.body);
-      return sendSuccess(res, {
-        status: 201,
-        message: "Registered",
-        data: result,
-      });
-    } catch (err) {
-      return sendError(res, { message: err.message });
-    }
+import { sendSuccess } from "../../utils/response.js";
+
+export const register = async (req, res, next) => {
+  try {
+    const { error } = registerValidator.validate(req.body);
+    if (error) return next(error);
+
+    const currentUser = req.user || null;
+    const { user, token } = await AuthService.register(req.body, currentUser);
+    successResponse(res, { user, token }, 201);
+  } catch (err) {
+    next(err);
   }
-  static async login(req, res) {
-    try {
-      const { error } = loginValidator.validate(req.body);
-      if (error)
-        return sendError(res, {
-          status: 400,
-          message: error.details[0].message,
-        });
-      const result = await authService.login(req.body);
-      return sendSuccess(res, { message: "Logged in", data: result });
-    } catch (err) {
-      return sendError(res, { message: err.message });
-    }
+};
+
+export const login = async (req, res, next) => {
+  try {
+    const { error } = loginValidator.validate(req.body);
+    if (error) return next(error);
+
+    const { user, token } = await AuthService.login(req.body);
+    sendSuccess(res, { user, token });
+  } catch (err) {
+    next(err);
   }
-  static async profile(req, res) {
-    try {
-      const user = req.user;
-      return sendSuccess(res, { data: user });
-    } catch (err) {
-      return sendError(res, { message: err.message });
-    }
-  }
-}
+};
