@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
+import { jest } from "@jest/globals";
 
+jest.setTimeout(30000); // tăng timeout toàn cục lên 30s
 let mongoServer;
 
 beforeAll(async () => {
@@ -10,6 +12,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await mongoose.disconnect();
+  await mongoose.connection.dropDatabase();
+  await mongoose.connection.close();
   await mongoServer.stop();
+  await mongoose.disconnect();
 });
