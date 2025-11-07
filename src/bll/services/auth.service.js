@@ -5,7 +5,7 @@ import errorHandler from "../../middleware/error.middleware.js";
 
 export class AuthService {
   static async register(data, currentUser) {
-    const { name, email, password, role = "student" } = data;
+    const { userName, email, password, role = "student" } = data;
 
     // Kiểm tra quyền tạo tài khoản
     if (role !== "student" && (!currentUser || currentUser.role !== "admin")) {
@@ -16,7 +16,12 @@ export class AuthService {
     if (existing) throw new errorHandler("Email already registered", 400);
 
     const hashed = await hashPassword(password);
-    const user = await Student.create({ name, email, password: hashed, role });
+    const user = await Student.create({
+      userName,
+      email,
+      password: hashed,
+      role,
+    });
     const token = generateToken({ id: user._id, role: user.role });
 
     return { user, token };

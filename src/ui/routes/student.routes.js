@@ -5,7 +5,7 @@ import { upload } from "../../utils/fileHandler.js";
 
 const router = express.Router();
 router.get("/me", authMiddleware(), StudentController.me);
-router.put("/me", authMiddleware(), StudentController.updateMe);
+router.patch("/me", authMiddleware(), StudentController.updateMe);
 router.post(
   "/upload-cv",
   authMiddleware(),

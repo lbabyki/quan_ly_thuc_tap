@@ -1,0 +1,31 @@
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+    "userName": "student",
+    "email": "student@gmail.com",
+    "password": "123456",
+    "role": "student"
+}
+
+###
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "password": "123456"
+}
+
+###
+PATCH  http://localhost:5000/api/students/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MGU1ODc0MDIxZmRhYWNkNmNhOGQwMCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MjU0OTI4MSwiZXhwIjoxNzYzMTU0MDgxfQ.83UhYcPr8YFTs5RKdzcPEMnrBGA-jDhF0i3KQYxNesw
+Content-Type: application/json
+
+{   
+    "email": "admin@gmail.com",
+    "studentCode": "000",
+    "password": "123456"
+}
+//lecturer
+//company

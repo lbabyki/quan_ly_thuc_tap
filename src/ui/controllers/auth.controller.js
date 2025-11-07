@@ -12,7 +12,11 @@ export const register = async (req, res, next) => {
 
     const currentUser = req.user || null;
     const { user, token } = await AuthService.register(req.body, currentUser);
-    sendSuccess(res, { user, token }, 201);
+    sendSuccess(res, {
+      status: 201,
+      message: "User registered successfully",
+      data: { user, token },
+    });
   } catch (err) {
     next(err);
   }
@@ -24,7 +28,7 @@ export const login = async (req, res, next) => {
     if (error) return next(error);
 
     const { user, token } = await AuthService.login(req.body);
-    sendSuccess(res, { user, token });
+    sendSuccess(res, { message: "Login successful", data: { user, token } });
   } catch (err) {
     next(err);
   }

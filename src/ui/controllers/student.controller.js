@@ -23,10 +23,10 @@ export class StudentController {
           message: error.details[0].message,
         });
       const updated = await studentService.updateStudent(
-        req.user._id,
+        req.user.id,
         req.body
       );
-      updated.password = undefined;
+
       return sendSuccess(res, { message: "Profile updated", data: updated });
     } catch (err) {
       return sendError(res, { message: err.message });
