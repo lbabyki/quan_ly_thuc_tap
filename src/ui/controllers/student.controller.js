@@ -13,6 +13,7 @@ export class StudentController {
       return sendError(res, { message: err.message });
     }
   }
+  // start Khu vực updateme
   static async updateMe(req, res) {
     try {
       const { error } = profileValidator.validate(req.body);
@@ -28,6 +29,7 @@ export class StudentController {
       return sendError(res, { message: err.message });
     }
   }
+  //end khu vực update me
   static async uploadCv(req, res) {
     try {
       if (!req.file)
