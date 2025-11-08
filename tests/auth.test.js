@@ -9,7 +9,7 @@ jest.setTimeout(20000);
 describe("Auth Routes", () => {
   it("should register a new user", async () => {
     const res = await request(app).post("/api/auth/register").send({
-      name: "Test User",
+      userName: "Test User",
       email: "test@example.com",
       password: "123456",
     });
