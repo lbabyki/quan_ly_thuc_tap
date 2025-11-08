@@ -14,7 +14,24 @@ export class StudentController {
     }
   }
   // start Khu vực updateme
+static async updateMe(req, res) {
+    try {
+      const { error } = profileValidator.validate(req.body);
+      if (error)
+        return sendError(res, {
+          status: 400,
+          message: error.details[0].message,
+        });
+      const updated = await studentService.updateStudent(
+        req.user.id,
+        req.body
+      );
 
+      return sendSuccess(res, { message: "Profile updated", data: updated });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
   //end khu vực update me
   static async uploadCv(req, res) {
     try {
