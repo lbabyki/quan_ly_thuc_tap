@@ -13,7 +13,7 @@ const internshipSchema = new mongoose.Schema(
     // trạng thái của vị trí/đợt thực tập
     status: {
       type: String,
-      enum: ["open", "closed", "pending"],
+      enum: ["pending", "approved", "rejected", "open", "closed"],
       default: "open",
     },
     // nếu đây là 1 đề xuất đề tài do sinh viên gửi:

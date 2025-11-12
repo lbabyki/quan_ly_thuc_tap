@@ -72,4 +72,44 @@ export class InternshipService {
     if (!student.internshipCompany) return null;
     return this.repo.findById(student.internshipCompany);
   }
+  async listSuggestions() {
+    // Lấy tất cả đề xuất (isSuggested = true và status pending)
+    return this.repo.find({ isSuggested: true, status: "pending" });
+  }
+
+  async reviewSuggestion(id, approve) {
+    const suggestion = await this.repo.findById(id);
+    if (!suggestion) throw new Error("Suggestion not found");
+    if (!suggestion.isSuggested) throw new Error("Not a suggested topic");
+
+    suggestion.status = approve ? "approved" : "rejected";
+    await suggestion.save();
+
+    return suggestion;
+  }
+  async cancelRegistration(studentId) {
+    const student = await this.studentRepo.findById(studentId);
+    if (!student) throw new Error("Student not found");
+    if (!student.internshipCompany)
+      throw new Error("Student not registered for internship");
+
+    const internship = await this.repo.findById(student.internshipCompany);
+    if (!internship) throw new Error("Internship not found");
+
+    // Chỉ cho phép hủy nếu internship chưa approved
+    if (internship.status === "approved") {
+      throw new Error("Cannot cancel after internship is approved");
+    }
+
+    // Xóa student khỏi danh sách students trong internship
+    internship.students = internship.students.filter(
+      (s) => s.toString() !== studentId.toString()
+    );
+    await internship.save();
+
+    // Xóa trường internshipCompany của student
+    await this.studentRepo.update(studentId, { internshipCompany: null });
+
+    return true;
+  }
 }

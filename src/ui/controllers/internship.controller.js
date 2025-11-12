@@ -90,4 +90,44 @@ export class InternshipController {
       return sendError(res, { message: err.message });
     }
   }
+  // Danh sách đề xuất chờ duyệt (admin)
+  static async listSuggestions(req, res) {
+    try {
+      const list = await service.listSuggestions();
+      return sendSuccess(res, { data: list });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
+
+  // Duyệt đề xuất: approve = true/false
+  static async reviewSuggestion(req, res) {
+    try {
+      const { id } = req.params;
+      const { approve } = req.body;
+
+      if (typeof approve !== "boolean") {
+        return sendError(res, {
+          status: 400,
+          message: "approve must be boolean",
+        });
+      }
+
+      const updated = await service.reviewSuggestion(id, approve);
+      return sendSuccess(res, {
+        message: `Suggestion ${approve ? "approved" : "rejected"}`,
+        data: updated,
+      });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
+  static async cancelRegistration(req, res) {
+    try {
+      await service.cancelRegistration(req.user._id);
+      return sendSuccess(res, { message: "Cancelled internship registration" });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
 }

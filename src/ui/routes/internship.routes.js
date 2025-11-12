@@ -29,5 +29,24 @@ router.post(
   authMiddleware("admin"),
   InternshipController.createInternship
 );
+// Danh sách đề xuất
+router.get(
+  "/suggestions",
+  authMiddleware("admin"),
+  InternshipController.listSuggestions
+);
+
+// Duyệt đề xuất
+router.patch(
+  "/suggestions/:id",
+  authMiddleware("admin"),
+  InternshipController.reviewSuggestion
+);
+// Hủy đăng ký (student)
+router.delete(
+  "/cancel",
+  authMiddleware(),
+  InternshipController.cancelRegistration
+);
 
 export default router;
