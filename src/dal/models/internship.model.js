@@ -10,7 +10,7 @@ const internshipSchema = new mongoose.Schema(
     contactPhone: { type: String },
     // danh sách sinh viên đã đăng ký
     students: [{ type: mongoose.Schema.Types.ObjectId, ref: "Student" }],
-    // trạng thái của vị trí/đợt thực tập
+    // trạng thái của vị trí/đợt thực tập sinh vien
     status: {
       type: String,
       enum: ["pending", "approved", "rejected", "open", "closed"],
