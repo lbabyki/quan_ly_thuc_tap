@@ -1,11 +1,13 @@
 // src/bll/services/internship.service.js
 import { InternshipRepository } from "../../dal/repositories/internship.repository.js";
 import { StudentRepository } from "../../dal/repositories/student.repository.js";
+import { NotificationService } from "./notification.service.js";
 
 export class InternshipService {
   constructor() {
     this.repo = new InternshipRepository();
     this.studentRepo = new StudentRepository();
+    this.notificationService = new NotificationService();
   }
 
   async create(data) {
@@ -27,30 +29,50 @@ export class InternshipService {
 
   // register student to an internship (studentId is ObjectId/string)
   async registerByStudent(studentId, internshipId, docUrl = null) {
-    // ensure student exists
     const student = await this.studentRepo.findById(studentId);
     if (!student) throw new Error("Student not found");
 
-    // ensure internship exists
     const internship = await this.repo.findById(internshipId);
     if (!internship) throw new Error("Internship not found");
 
-    // check internship status
     if (internship.status !== "open")
       throw new Error("Internship not open for registration");
 
-    // register
     const updated = await this.repo.registerStudent(
       internshipId,
       studentId,
       docUrl
     );
 
-    // update student record's internshipCompany if not set
     if (!student.internshipCompany) {
       await this.studentRepo.update(studentId, {
         internshipCompany: internship._id,
       });
+    }
+
+    // Thông báo đăng ký thành công
+    await this.notificationService.notifyInternshipApproved(
+      student,
+      internship
+    );
+
+    // Thông báo cho công ty
+    if (internship.contactEmail) {
+      await this.notificationService.sendEmail(
+        internship.contactEmail,
+        `👨‍🎓 Sinh viên mới đăng ký thực tập`,
+        `
+          <h3>Thông báo đăng ký thực tập</h3>
+          <p>Sinh viên <strong>${student.fullName}</strong> đã đăng ký thực tập:</p>
+          <ul>
+            <li><strong>Mã sinh viên:</strong> ${student.studentCode}</li>
+            <li><strong>Email:</strong> ${student.email}</li>
+            <li><strong>Khoa:</strong> ${student.department}</li>
+            <li><strong>Vị trí:</strong> ${internship.position}</li>
+          </ul>
+        `,
+        true
+      );
     }
 
     return updated;
@@ -84,6 +106,33 @@ export class InternshipService {
 
     suggestion.status = approve ? "approved" : "rejected";
     await suggestion.save();
+
+    // Thông báo cho sinh viên đề xuất
+    const student = await this.studentRepo.findById(suggestion.suggestedBy);
+    if (student) {
+      const subject = approve
+        ? `✅ Đề xuất đề tài được chấp nhận`
+        : `❌ Đề xuất đề tài bị từ chối`;
+
+      const content = `
+        <h3>Xin chào ${student.fullName},</h3>
+        <p>Đề xuất đề tài "${suggestion.suggestedTitle}" của bạn đã ${
+        approve ? "được chấp nhận" : "bị từ chối"
+      }.</p>
+        ${
+          approve
+            ? "<p>Bạn có thể bắt đầu đăng ký thực tập với đề tài này.</p>"
+            : "<p>Vui lòng xem xét đề xuất đề tài khác.</p>"
+        }
+      `;
+
+      await this.notificationService.sendEmail(
+        student.email,
+        subject,
+        content,
+        true
+      );
+    }
 
     return suggestion;
   }

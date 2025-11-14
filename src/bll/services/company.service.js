@@ -14,7 +14,7 @@ export class CompanyService {
 
   async register(data) {
     const { companyName, contactEmail, password, ...rest } = data;
-    
+
     const existing = await this.repo.findOne({ contactEmail });
     if (existing) throw new AppError("Email already registered", 400);
 
@@ -24,7 +24,7 @@ export class CompanyService {
       contactEmail,
       password: hashedPassword,
       role: "company",
-      ...rest
+      ...rest,
     });
 
     const token = signToken({ id: company._id, role: "company" });
@@ -32,7 +32,9 @@ export class CompanyService {
   }
 
   async getAssignedStudents(companyId) {
-    const company = await this.repo.findById(companyId).populate("currentStudents");
+    const company = await this.repo
+      .findById(companyId)
+      .populate("currentStudents");
     return company?.currentStudents || [];
   }
 
@@ -42,9 +44,9 @@ export class CompanyService {
       company: companyId,
       student: studentId,
       ...evaluationData,
-      evaluatedAt: new Date()
+      evaluatedAt: new Date(),
     };
-    
+
     // Save to CompanyEvaluation model (need to create)
     return evaluation;
   }
@@ -55,16 +57,47 @@ export class CompanyService {
       company: companyId,
       ...reportData,
       submittedAt: new Date(),
-      status: "submitted"
+      status: "submitted",
     });
-    
+
     // Notify admin about new company report
     // TODO: Add notification service
-    
+
     return report;
   }
 
   async getCompanyReports(companyId, filters = {}) {
     return this.reportRepo.find({ company: companyId, ...filters });
+  }
+
+  async getProfile(companyId) {
+    const company = await this.repo.findById(companyId).select("-password");
+    if (!company) throw new AppError("Company not found", 404);
+    return company;
+  }
+
+  async updateProfile(companyId, updateData) {
+    const { password, role, ...allowedUpdates } = updateData;
+    const company = await this.repo.update(companyId, allowedUpdates);
+    if (!company) throw new AppError("Company not found", 404);
+    return company;
+  }
+
+  async confirmStudent(companyId, studentId) {
+    const student = await this.studentRepo.findById(studentId);
+    if (!student) throw new AppError("Student not found", 404);
+
+    // Update student status to confirmed
+    await this.studentRepo.update(studentId, {
+      internshipStatus: "confirmed",
+      confirmedAt: new Date(),
+    });
+
+    // Add student to company's current students
+    await this.repo.update(companyId, {
+      $addToSet: { currentStudents: studentId },
+    });
+
+    return true;
   }
 }

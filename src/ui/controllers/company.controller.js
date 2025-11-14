@@ -7,10 +7,22 @@ export class CompanyController {
   static async register(req, res) {
     try {
       const result = await service.register(req.body);
-      return sendSuccess(res, { 
-        status: 201, 
-        message: "Company registered successfully", 
-        data: result 
+      return sendSuccess(res, {
+        status: 201,
+        message: "Company registered successfully",
+        data: result,
+      });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
+  static async login(req, res) {
+    try {
+      const result = await service.login(req.body);
+      return sendSuccess(res, {
+        status: 200,
+        message: "Login successful",
+        data: result,
       });
     } catch (err) {
       return sendError(res, { message: err.message });
@@ -29,27 +41,68 @@ export class CompanyController {
   static async evaluateStudent(req, res) {
     try {
       const evaluation = await service.evaluateStudent(
-        req.user._id, 
-        req.params.id, 
+        req.user._id,
+        req.params.id,
         req.body
       );
-      return sendSuccess(res, { 
-        message: "Student evaluated successfully", 
-        data: evaluation 
+      return sendSuccess(res, {
+        message: "Student evaluated successfully",
+        data: evaluation,
       });
     } catch (err) {
       return sendError(res, { message: err.message });
     }
   }
 
-  // NEW: Company report feature
+  static async getProfile(req, res) {
+    try {
+      const company = await service.getProfile(req.user._id);
+      return sendSuccess(res, { data: company });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
+
+  static async updateProfile(req, res) {
+    try {
+      const company = await service.updateProfile(req.user._id, req.body);
+      return sendSuccess(res, {
+        message: "Profile updated successfully",
+        data: company,
+      });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
+
+  static async confirmStudent(req, res) {
+    try {
+      await service.confirmStudent(req.user._id, req.params.id);
+      return sendSuccess(res, {
+        message: "Student confirmed successfully",
+      });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
+
   static async createReport(req, res) {
     try {
       const report = await service.createCompanyReport(req.user._id, req.body);
-      return sendSuccess(res, { 
-        message: "Company report created successfully", 
-        data: report 
+      return sendSuccess(res, {
+        status: 201,
+        message: "Report created successfully",
+        data: report,
       });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
+
+  static async getMyReports(req, res) {
+    try {
+      const reports = await service.getCompanyReports(req.user._id, req.query);
+      return sendSuccess(res, { data: reports });
     } catch (err) {
       return sendError(res, { message: err.message });
     }

@@ -1,7 +1,7 @@
 ### ===== VARIABLES =====
 @baseUrl = http://localhost:5000/v1
 ### Nguyễn văn A Token
-@student_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTc3YzQ3MWVkYjdiY2FhNDJmYmE3NSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzYzMTQ3MTg2LCJleHAiOjE3NjM3NTE5ODZ9._i1OuI6qM9x_1r-zHR7gcOJjmwBO0grd5FJGzEllf_o
+@student_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTc5NmUzYTY2YjI2OTU0MDk0NTU5ZSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MzE1ODU5NywiZXhwIjoxNzYzNzYzMzk3fQ.FhO3nhV5MkYUlWuhMkcx6QI8GyCa9UIWvjIrVyL-kXw
 @lecturer_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTc5NmUzYTY2YjI2OTU0MDk0NTVhNCIsInJvbGUiOiJsZWN0dXJlciIsImlhdCI6MTc2MzE1MzY3OSwiZXhwIjoxNzYzNzU4NDc5fQ.tNbszychRNWrYfkUKLuroE1EXqxGhWn-DvIlom3kXbY
 @admin_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTc3YWU5N2QzZWFhYWFjZDFmMzFhOCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MzE0NjY2OCwiZXhwIjoxNzYzNzUxNDY4fQ.p03eryI2EfZ0uAY2H4G0Fkc0Sc3BtZ-bwCfY5AQSOcQ
 ### Nguyễn văn A ID
@@ -514,3 +514,50 @@ Content-Type: application/json
     "startDate": "2024-12-01",
     "endDate": "2024-11-01"
 }
+
+### ===== NOTIFICATION TESTING =====
+
+### Test Email
+POST {{baseUrl}}/api/notifications/test-email
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "email": "student@gmail.com",
+    "subject": "Test Email",
+    "message": "This is a test email from the internship system."
+}
+
+### Test SMS
+POST {{baseUrl}}/api/notifications/test-sms
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "phone": "+84123456789",
+    "message": "Test SMS from internship system."
+}
+
+### Send Bulk Notification
+POST {{baseUrl}}/api/notifications/bulk
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "title": "Thông báo quan trọng",
+    "message": "Đây là thông báo quan trọng từ hệ thống quản lý thực tập.",
+    "targetRole": "student",
+    "method": "email"
+}
+
+### Trigger Deadline Check
+POST {{baseUrl}}/api/notifications/trigger-deadline-check
+Authorization: Bearer {{admin_token}}
+
+### Trigger Weekly Reminders
+POST {{baseUrl}}/api/notifications/trigger-weekly-reminders
+Authorization: Bearer {{admin_token}}
+
+
+###Test doc swagger
+GET {{baseUrl}}/api-docs

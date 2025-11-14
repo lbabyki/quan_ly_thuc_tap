@@ -43,4 +43,27 @@ export class AuthService {
     const token = generateToken({ id: user._id, role: user.role });
     return { user, token };
   }
+
+  static async getUserProfile(userId, userRole) {
+    let user;
+
+    switch (userRole) {
+      case "student":
+      case "lecturer":
+      case "admin":
+        user = await Student.findById(userId).select("-password");
+        break;
+      case "company":
+        user = await Company.findById(userId).select("-password");
+        break;
+      default:
+        throw new AppError("Invalid user role", 400);
+    }
+
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    return user;
+  }
 }
