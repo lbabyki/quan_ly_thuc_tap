@@ -1,22 +1,15 @@
 import mongoose from "mongoose";
 
-const lecturerSchema = new mongoose.Schema(
-  {
-    fullName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    phone: { type: String },
-    department: { type: String },
-    role: {
-      type: String,
-      enum: ["student", "lecturer", "company", "admin"],
-      default: "lecturer",
-    },
-    password: { type: String, required: true },
-    assignedStudents: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
-    ],
-  },
-  { timestamps: true }
-);
+const { Schema } = mongoose;
 
-export default mongoose.model("Lecturer", lecturerSchema);
+const LecturerSchema = new Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  phone: { type: String },
+  department: { type: String },
+  role: { type: String, default: "lecturer" },
+  assignedInternships: [{ type: Schema.Types.ObjectId, ref: "Internship" }],
+  createdAt: { type: Date, default: Date.now },
+});
+
+export default mongoose.model("Lecturer", LecturerSchema);

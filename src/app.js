@@ -9,6 +9,7 @@ import authRoutes from "./ui/routes/auth.routes.js";
 import studentRoutes from "./ui/routes/student.routes.js";
 import progressRoutes from "./ui/routes/progress.routes.js";
 import internshipRoutes from "./ui/routes/internship.routes.js";
+import lecturerRoutes from "./ui/routes/lecturer.routes.js";
 import errorHandler from "./middleware/error.middleware.js";
 
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/internships", internshipRoutes);
+app.use("/api/lecturer", lecturerRoutes);
 
 app.use((req, res) =>
   res.status(404).json({ success: false, message: "Not Found" })
