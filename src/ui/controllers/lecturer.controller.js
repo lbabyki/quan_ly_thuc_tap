@@ -1,147 +1,112 @@
-import LecturerService from "../../bll/services/lecturer.service.js";
-import { evaluationSchema } from "../../bll/validators/evaluation.validator.js";
+import { sendSuccess, sendError } from "../../utils/response.js";
+import lecturerService from "../../bll/services/lecturer.service.js";
+import {
+  defenseScheduleSchema,
+  addStudentToDefenseSchema,
+  finalizeDefenseSchema,
+} from "../../bll/validators/lecturer.validator.js";
 
 class LecturerController {
-  async getAssignedStudents(req, res, next) {
+  async getAssignedStudents(req, res) {
     try {
-      const students = await LecturerService.getAssignedStudents(req.user.id);
-      res.json({ success: true, data: students });
+      const lecturerId = req.user._id;
+      const students = await lecturerService.getAssignedStudents(lecturerId);
+      return sendSuccess(res, { data: students });
     } catch (err) {
-      next(err);
+      return sendError(res, { message: err.message });
     }
   }
 
-  async getDefenseSchedules(req, res, next) {
+  async evaluateStudent(req, res) {
     try {
-      const lecturerId = req.user.id;
-      const schedules = await LecturerService.getDefenseSchedules(lecturerId);
-      res.json({ success: true, data: schedules });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async createOrUpdateDefenseSchedule(req, res, next) {
-    try {
-      const scheduleData = req.body;
-      scheduleData.lecturer = req.user.id; // ensure lecturer is current user
-
-      const schedule = await LecturerService.createOrUpdateDefenseSchedule(
-        scheduleData
+      const { studentId } = req.params;
+      const lecturerId = req.user._id;
+      const evaluation = await lecturerService.evaluateStudent(
+        lecturerId,
+        studentId,
+        req.body
       );
-      res
-        .status(scheduleData._id ? 200 : 201)
-        .json({ success: true, data: schedule });
+      return sendSuccess(res, {
+        message: "Student evaluated",
+        data: evaluation,
+      });
     } catch (err) {
-      next(err);
+      return sendError(res, { message: err.message });
     }
   }
 
-  async addStudentToDefense(req, res, next) {
+  async getEvaluations(req, res) {
+    try {
+      const lecturerId = req.user._id;
+      const evaluations = await lecturerService.getEvaluations(lecturerId);
+      return sendSuccess(res, { data: evaluations });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
+
+  // NEW: Defense Schedule methods
+  async getDefenseSchedules(req, res) {
+    try {
+      const lecturerId = req.user._id;
+      const schedules = await lecturerService.getDefenseSchedules(lecturerId);
+      return sendSuccess(res, { data: schedules });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
+
+  async createDefenseSchedule(req, res) {
+    try {
+      const { error } = defenseScheduleSchema.validate(req.body);
+      if (error)
+        return sendError(res, {
+          status: 400,
+          message: error.details[0].message,
+        });
+
+      const lecturerId = req.user._id;
+      const schedule = await lecturerService.createDefenseSchedule(
+        lecturerId,
+        req.body
+      );
+      return sendSuccess(res, {
+        status: 201,
+        message: "Defense schedule created",
+        data: schedule,
+      });
+    } catch (err) {
+      return sendError(res, { message: err.message });
+    }
+  }
+
+  async addStudentToDefense(req, res) {
     try {
       const { scheduleId } = req.params;
       const { studentId } = req.body;
 
-      const updatedSchedule = await LecturerService.addStudentToDefense(
+      const result = await lecturerService.addStudentToDefense(
         scheduleId,
         studentId
       );
-      res.json({ success: true, data: updatedSchedule });
+      return sendSuccess(res, {
+        message: "Student added to defense",
+        data: result,
+      });
     } catch (err) {
-      next(err);
+      return sendError(res, { message: err.message });
     }
   }
 
-  async removeStudentFromDefense(req, res, next) {
-    try {
-      const { scheduleId, studentId } = req.params;
-      const updatedSchedule = await LecturerService.removeStudentFromDefense(
-        scheduleId,
-        studentId
-      );
-      res.json({ success: true, data: updatedSchedule });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async finalizeDefenseSchedule(req, res, next) {
+  async finalizeDefense(req, res) {
     try {
       const { scheduleId } = req.params;
       const { minutes } = req.body;
 
-      const finalized = await LecturerService.finalizeDefense(
-        scheduleId,
-        minutes
-      );
-      res.json({ success: true, data: finalized });
+      const result = await lecturerService.finalizeDefense(scheduleId, minutes);
+      return sendSuccess(res, { message: "Defense finalized", data: result });
     } catch (err) {
-      next(err);
-    }
-  }
-  async respondToProgress(req, res, next) {
-    try {
-      const { progressId } = req.params;
-      const { message } = req.body;
-      const lecturerId = req.user.id;
-
-      if (!message || message.trim() === "") {
-        return res
-          .status(400)
-          .json({ success: false, message: "Message is required" });
-      }
-
-      const updatedProgress = await LecturerService.respondToProgress(
-        progressId,
-        lecturerId,
-        message
-      );
-
-      res.json({ success: true, data: updatedProgress });
-    } catch (err) {
-      next(err);
-    }
-  }
-  async evaluateStudent(req, res, next) {
-    try {
-      const lecturerId = req.user.id;
-      const studentId = req.params.studentId;
-      const {
-        progressReportId,
-        scoreProcess,
-        scoreReport,
-        scoreDefense,
-        comments,
-      } = req.body;
-
-      // Validate đơn giản ở đây, hoặc dùng Joi ở validator
-      await evaluationSchema.validateAsync(req.body);
-
-      const evaluation = await LecturerService.evaluateStudent({
-        studentId,
-        lecturerId,
-        progressReportId,
-        scoreProcess,
-        scoreReport,
-        scoreDefense,
-        comments,
-      });
-
-      res.status(201).json({ success: true, data: evaluation });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getEvaluations(req, res, next) {
-    try {
-      const lecturerId = req.user.id;
-      const evaluations = await LecturerService.getEvaluationsByLecturer(
-        lecturerId
-      );
-      res.json({ success: true, data: evaluations });
-    } catch (error) {
-      next(error);
+      return sendError(res, { message: err.message });
     }
   }
 }

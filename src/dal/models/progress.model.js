@@ -22,14 +22,26 @@ const progressSchema = new mongoose.Schema(
       ref: "Internship",
       required: true,
     },
-    report: { type: String },
+    // Thêm reportType để phân loại
+    reportType: {
+      type: String,
+      enum: ["weekly", "monthly", "final"],
+      default: "weekly",
+    },
     week: { type: Number, required: true },
     title: { type: String, required: true },
     content: { type: String },
-    createdAt: { type: Date, default: Date.now },
+    // Thêm attachments cho file đính kèm
+    attachments: [{ type: String }],
+    // Thêm status để theo dõi trạng thái
+    status: {
+      type: String,
+      enum: ["draft", "submitted", "reviewed", "approved"],
+      default: "submitted",
+    },
+    submittedAt: { type: Date, default: Date.now },
     feedbacks: [feedbackSchema],
   },
-
   { timestamps: true }
 );
 

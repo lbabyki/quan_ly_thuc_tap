@@ -11,7 +11,13 @@ export class ProgressController {
           status: 400,
           message: error.details[0].message,
         });
-      const payload = { ...req.body, student: req.user._id };
+
+      const payload = {
+        ...req.body,
+        student: req.user._id,
+        attachments: req.files ? req.files.map((file) => file.filename) : [],
+      };
+
       const rec = await progressService.create(payload);
       return sendSuccess(res, {
         status: 201,
@@ -23,33 +29,57 @@ export class ProgressController {
     }
   }
 
+  // Lấy danh sách progress của student hiện tại
   static async myList(req, res) {
     try {
-      const list = await progressService.listByStudent(req.user._id);
-      return sendSuccess(res, { data: list });
+      const studentId = req.user._id;
+      const progressList = await progressService.listByStudent(studentId);
+      return sendSuccess(res, { data: progressList });
     } catch (err) {
       return sendError(res, { message: err.message });
     }
   }
 
-  static async listByStudent(req, res) {
+  // Lấy progress của student theo tuần
+  static async myProgressByWeek(req, res) {
     try {
-      const list = await progressService.listByStudent(req.params.studentId);
-      return sendSuccess(res, { data: list });
+      const studentId = req.user._id;
+      const { week } = req.params;
+      const progress = await progressService.listByStudentAndWeek(
+        studentId,
+        parseInt(week)
+      );
+      return sendSuccess(res, { data: progress });
     } catch (err) {
       return sendError(res, { message: err.message });
     }
   }
-  static async listProgressByWeek(req, res) {
+
+  // Lecturer xem progress của student cụ thể
+  static async listByStudent(req, res) {
     try {
-      const { week } = req.params;
-      const data = await progressService.listByStudentAndWeek(
-        req.user.id,
-        week
-      );
-      return successResponse(res, data);
+      const { studentId } = req.params;
+      const progressList = await progressService.listByStudent(studentId);
+      return sendSuccess(res, { data: progressList });
     } catch (err) {
-      return errorResponse(res, err.message);
+      return sendError(res, { message: err.message });
+    }
+  }
+
+  // Lecturer update status
+  static async updateStatus(req, res) {
+    try {
+      const { progressId } = req.params;
+      const { status } = req.body;
+
+      if (!["submitted", "reviewed", "approved"].includes(status)) {
+        return sendError(res, { status: 400, message: "Invalid status" });
+      }
+
+      const updated = await progressService.updateStatus(progressId, status);
+      return sendSuccess(res, { message: "Status updated", data: updated });
+    } catch (err) {
+      return sendError(res, { message: err.message });
     }
   }
 }

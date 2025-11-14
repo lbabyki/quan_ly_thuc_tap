@@ -1,15 +1,69 @@
-POST http://localhost:5000/api/auth/register
+### ===== VARIABLES =====
+@baseUrl = http://localhost:5000/v1
+### Nguyễn văn A Token
+@student_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTc3YzQ3MWVkYjdiY2FhNDJmYmE3NSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzYzMTQ3MTg2LCJleHAiOjE3NjM3NTE5ODZ9._i1OuI6qM9x_1r-zHR7gcOJjmwBO0grd5FJGzEllf_o
+@lecturer_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTc5NmUzYTY2YjI2OTU0MDk0NTVhNCIsInJvbGUiOiJsZWN0dXJlciIsImlhdCI6MTc2MzE1MzY3OSwiZXhwIjoxNzYzNzU4NDc5fQ.tNbszychRNWrYfkUKLuroE1EXqxGhWn-DvIlom3kXbY
+@admin_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTc3YWU5N2QzZWFhYWFjZDFmMzFhOCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MzE0NjY2OCwiZXhwIjoxNzYzNzUxNDY4fQ.p03eryI2EfZ0uAY2H4G0Fkc0Sc3BtZ-bwCfY5AQSOcQ
+### Nguyễn văn A ID
+@student_id = 691790f7baea7f1fb0492587
+
+@company_id = 691790f7baea7f1fb049258e
+@semester_id = 691790f7baea7f1fb04925a0
+@report_id = 691790f7baea7f1fb049259d
+@admin_id = 691790f7baea7f1fb0492585
+@lecturer_id = 691796e3a66b2695409455a4
+@company_id = 691790f7baea7f1fb049258e
+@internship_id = 691790f7baea7f1fb0492592
+@progress_id = 691790f7baea7f1fb0492599
+@company_report_id = 691790f7baea7f1fb049259d
+@semester_id = 691790f7baea7f1fb04925a0
+
+
+### ===== STEP 1: AUTHENTICATION =====
+
+
+### 0.0 login admin
+POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
-    "userName": "student",
+    "email": "admin@gmail.com",
+    "password": "123456"
+}
+
+### 1.1 Register Student
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "userName": "Nguyen Van A",
     "email": "student@gmail.com",
     "password": "123456",
     "role": "student"
 }
 
-###
-POST http://localhost:5000/api/auth/login
+### 1.2 Login Student (Copy token to @student_token)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "student@gmail.com",
+    "password": "123456"
+}
+
+
+
+### 1.4 Login Lecturer (Copy token to @lecturer_token)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "lecturer@gmail.com",
+    "password": "123456"
+}
+
+### 1.5 Login Admin (Copy token to @admin_token)
+POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
@@ -17,15 +71,446 @@ Content-Type: application/json
     "password": "123456"
 }
 
-###
-PATCH  http://localhost:5000/api/students/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MGU1ODc0MDIxZmRhYWNkNmNhOGQwMCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MjU0OTI4MSwiZXhwIjoxNzYzMTU0MDgxfQ.83UhYcPr8YFTs5RKdzcPEMnrBGA-jDhF0i3KQYxNesw
+### ===== STEP 2: STUDENT MANAGEMENT =====
+
+### 2.1 Get My Profile
+GET {{baseUrl}}/api/students/me
+Authorization: Bearer {{student_token}}
+
+### 2.2 Update My Profile
+PATCH {{baseUrl}}/api/students/me
+Authorization: Bearer {{student_token}}
 Content-Type: application/json
 
-{   
-    "email": "admin@gmail.com",
-    "studentCode": "000",
-    "password": "123456"
+{
+    "fullName": "Nguyen Van A Updated",
+    "studentCode": "SV001",
+    "phone": "0123456789",
+    "department": "Computer Science",
+    "skills": ["JavaScript", "Node.js", "React"],
+    "year": 4
 }
-//lecturer
-//company
+
+### 2.3 Upload CV (Create test-files/cv.pdf first)
+POST {{baseUrl}}/api/students/upload-cv
+Authorization: Bearer {{student_token}}
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="cv"; filename="cv.pdf"
+Content-Type: application/pdf
+
+< ./test-files/cv.pdf
+--MyBoundary--
+
+### 2.4 Get Student by ID (Use real student ID from profile response)
+GET {{baseUrl}}/api/students/{{student_id}}
+Authorization: Bearer {{lecturer_token}}
+
+### ===== STEP 3: INTERNSHIP MANAGEMENT =====
+
+### 3.1 List Available Internships
+GET {{baseUrl}}/api/internships/available
+Authorization: Bearer {{student_token}}
+
+### 3.2 Get My Internship
+GET {{baseUrl}}/api/internships/me
+Authorization: Bearer {{student_token}}
+
+### 3.3 Register for Internship (Use real internship ID)
+POST {{baseUrl}}/api/internships/register/{{internship_id}}
+Authorization: Bearer {{student_token}}
+
+### 3.4 Cancel Registration
+DELETE {{baseUrl}}/api/internships/cancel
+Authorization: Bearer {{student_token}}
+
+### 3.5 Suggest New Topic
+POST {{baseUrl}}/api/internships/suggest-topic
+Authorization: Bearer {{student_token}}
+Content-Type: application/json
+
+{
+    "suggestedTitle": "AI Chatbot Development",
+    "suggestedDescription": "Develop an AI-powered chatbot for customer service",
+    "companyName": "Tech Startup XYZ",
+    "position": "AI Developer Intern"
+}
+
+### 3.6 List All Internships (Admin)
+GET {{baseUrl}}/api/internships/all
+Authorization: Bearer {{admin_token}}
+
+### ===== STEP 4: PROGRESS MANAGEMENT =====
+
+### 4.1 Create Progress Report
+POST {{baseUrl}}/api/progress/
+Authorization: Bearer {{student_token}}
+Content-Type: application/json
+
+{
+    "week": 1,
+    "title": "Week 1 Progress Report",
+    "content": "This week I completed the project setup and initial research. Key achievements include setting up development environment, studying existing solutions, and creating project timeline.",
+    "reportType": "weekly"
+}
+
+### 4.2 Get My Progress List
+GET {{baseUrl}}/api/progress/me
+Authorization: Bearer {{student_token}}
+
+### 4.3 Get My Progress by Week
+GET {{baseUrl}}/api/progress/me/week/1
+Authorization: Bearer {{student_token}}
+
+### 4.4 Lecturer - View Student Progress
+GET {{baseUrl}}/api/progress/student/{{student_id}}
+Authorization: Bearer {{lecturer_token}}
+
+### 4.5 Lecturer - Update Progress Status
+PATCH {{baseUrl}}/api/progress/{{progress_id}}/status
+Authorization: Bearer {{lecturer_token}}
+Content-Type: application/json
+
+{
+    "status": "reviewed"
+}
+
+### ===== STEP 5: LECTURER MANAGEMENT =====
+
+### 5.1 Get Assigned Students
+GET {{baseUrl}}/api/lecturer/students
+Authorization: Bearer {{lecturer_token}}
+
+### 5.2 Evaluate Student
+POST {{baseUrl}}/api/lecturer/evaluate/{{student_id}}
+Authorization: Bearer {{lecturer_token}}
+Content-Type: application/json
+
+{
+    "progressReportId": "{{progress_id}}",
+    "scoreProcess": 8.5,
+    "scoreReport": 9.0,
+    "scoreDefense": 8.0,
+    "comments": "Good progress overall. Need to improve documentation quality."
+}
+
+### 5.3 Get My Evaluations
+GET {{baseUrl}}/api/lecturer/evaluations
+Authorization: Bearer {{lecturer_token}}
+
+### ===== STEP 6: SYSTEM =====
+
+### 6.1 Health Check
+GET {{baseUrl}}/api/health
+
+### 6.2 Test 404
+GET {{baseUrl}}/api/nonexistent
+
+### ===== STEP 7: ERROR TESTING =====
+
+### 7.1 Invalid Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "wrong@email.com",
+    "password": "wrongpass"
+}
+
+### 7.2 Unauthorized Access
+GET {{baseUrl}}/api/lecturer/students
+Authorization: Bearer {{student_token}}
+
+### 7.3 Missing Token
+GET {{baseUrl}}/api/students/me
+
+### 7.4 Invalid Data
+POST {{baseUrl}}/api/progress/
+Authorization: Bearer {{student_token}}
+Content-Type: application/json
+
+{
+    "week": 0,
+    "title": "A",
+    "content": "Too short"
+}
+
+### 7.5 Invalid ObjectId
+GET {{baseUrl}}/api/students/invalid-id
+Authorization: Bearer {{lecturer_token}}
+
+### ===== STEP 8: ADMIN MANAGEMENT =====
+
+### 8.1 Get Dashboard Stats
+GET {{baseUrl}}/api/admin/dashboard
+Authorization: Bearer {{admin_token}}
+
+### 8.2 Get All Users
+GET {{baseUrl}}/api/admin/users?type=all&page=1&limit=10
+Authorization: Bearer {{admin_token}}
+
+### 8.3 Get Students Only
+GET {{baseUrl}}/api/admin/users?type=students&page=1&limit=10
+Authorization: Bearer {{admin_token}}
+
+### 8.4 Get Companies Only
+GET {{baseUrl}}/api/admin/users?type=companies&page=1&limit=10
+Authorization: Bearer {{admin_token}}
+
+### 8.5 Create New Student
+POST {{baseUrl}}/api/admin/users
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "userType": "student",
+    "userName": "Tran Van C",
+    "email": "student2@gmail.com",
+    "password": "123456",
+    "fullName": "Tran Van C",
+    "department": "Information Technology",
+    "studentCode": "SV002",
+    "phone": "0987654321"
+}
+
+### 8.6 Create New Lecturer
+POST {{baseUrl}}/api/admin/users
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "userType": "lecturer",
+    "userName": "Dr. Le Thi D",
+    "email": "lecturer2@gmail.com",
+    "password": "123456",
+    "fullName": "Dr. Le Thi D",
+    "department": "Computer Science",
+    "phone": "0123456789"
+}
+
+### 8.7 Create New Company
+POST {{baseUrl}}/api/admin/users
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "userType": "company",
+    "companyName": "FPT Software",
+    "contactPerson": "Nguyen Van Manager",
+    "contactEmail": "fpt@gmail.com",
+    "password": "123456",
+    "contactPhone": "0901234567",
+    "address": "FPT Tower, Ho Chi Minh City"
+}
+
+### 8.8 Update User (Student)
+PATCH {{baseUrl}}/api/admin/users/{{student_id}}?userType=student
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "fullName": "Nguyen Van A - Updated by Admin",
+    "department": "Software Engineering",
+    "status": "approved",
+    "phone": "0999888777"
+}
+
+### 8.9 Reset User Password
+POST {{baseUrl}}/api/admin/users/{{student_id}}/reset-password?userType=student
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "newPassword": "newpass123"
+}
+
+### 8.10 Delete User (Use with caution!)
+# DELETE {{baseUrl}}/api/admin/users/USER_ID_HERE?userType=student
+# Authorization: Bearer {{admin_token}}
+
+### ===== STEP 9: INTERNSHIP MANAGEMENT (ADMIN) =====
+
+### 9.1 Create New Internship Topic
+POST {{baseUrl}}/api/admin/internships
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "title": "Web Development Internship",
+    "description": "Develop modern web applications using React and Node.js",
+    "company": "Tech Solutions Ltd",
+    "position": "Frontend Developer Intern",
+    "requirements": ["JavaScript", "React", "HTML/CSS"],
+    "maxStudents": 3,
+    "duration": "3 months",
+    "location": "Ho Chi Minh City",
+    "status": "open"
+}
+
+### 9.2 Update Internship
+PATCH {{baseUrl}}/api/admin/internships/{{internship_id}}
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "title": "Advanced Web Development Internship",
+    "maxStudents": 5,
+    "requirements": ["JavaScript", "React", "Node.js", "MongoDB"]
+}
+
+### 9.3 Approve Suggestion
+POST {{baseUrl}}/api/admin/internships/{{internship_id}}/approve
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "approve": true,
+    "adminNotes": "Good topic, approved for this semester"
+}
+
+### 9.4 Reject Suggestion
+POST {{baseUrl}}/api/admin/internships/{{internship_id}}/approve
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "approve": false,
+    "adminNotes": "Topic too broad, please be more specific"
+}
+
+### 9.5 Delete Internship (Use with caution!)
+# DELETE {{baseUrl}}/api/admin/internships/{{internship_id}}
+# Authorization: Bearer {{admin_token}}
+
+### ===== STEP 10: SEMESTER MANAGEMENT =====
+
+### 10.1 Create New Semester
+POST {{baseUrl}}/api/admin/semesters
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "semester": "2024-2",
+    "startDate": "2024-08-01",
+    "endDate": "2024-12-15",
+    "reportDeadlines": [
+        {
+            "type": "weekly",
+            "deadline": "2024-12-01"
+        },
+        {
+            "type": "final",
+            "deadline": "2024-12-10"
+        }
+    ],
+    "defenseSchedule": {
+        "startDate": "2024-12-16",
+        "endDate": "2024-12-20"
+    },
+    "isActive": false
+}
+
+### 10.2 Update Semester
+PATCH {{baseUrl}}/api/admin/semesters/SEMESTER_ID_HERE
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "endDate": "2024-12-20",
+    "defenseSchedule": {
+        "startDate": "2024-12-21",
+        "endDate": "2024-12-25"
+    }
+}
+
+### 10.3 Set Active Semester
+POST {{baseUrl}}/api/admin/semesters/SEMESTER_ID_HERE/activate
+Authorization: Bearer {{admin_token}}
+
+### ===== STEP 11: ANALYTICS & REPORTS =====
+
+### 11.1 Get Analytics Overview
+GET {{baseUrl}}/api/admin/analytics
+Authorization: Bearer {{admin_token}}
+
+### 11.2 Get Department Analytics
+GET {{baseUrl}}/api/admin/analytics?type=department
+Authorization: Bearer {{admin_token}}
+
+### 11.3 Get Company Analytics
+GET {{baseUrl}}/api/admin/analytics?type=company
+Authorization: Bearer {{admin_token}}
+
+### ===== STEP 12: COMPANY REPORTS MANAGEMENT =====
+
+### 12.1 Get All Company Reports
+GET {{baseUrl}}/api/admin/company-reports?page=1&limit=10
+Authorization: Bearer {{admin_token}}
+
+### 12.2 Filter Reports by Status
+GET {{baseUrl}}/api/admin/company-reports?status=submitted&page=1&limit=5
+Authorization: Bearer {{admin_token}}
+
+### 12.3 Filter Reports by Company
+GET {{baseUrl}}/api/admin/company-reports?company=COMPANY_ID_HERE
+Authorization: Bearer {{admin_token}}
+
+### 12.4 Filter Reports by Semester
+GET {{baseUrl}}/api/admin/company-reports?semester=2024-1
+Authorization: Bearer {{admin_token}}
+
+### 12.5 Approve Company Report
+POST {{baseUrl}}/api/admin/company-reports/REPORT_ID_HERE/approve
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "adminNotes": "Report approved. Good collaboration feedback."
+}
+
+### 12.6 Reject Company Report
+POST {{baseUrl}}/api/admin/company-reports/REPORT_ID_HERE/reject
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "adminNotes": "Report incomplete. Please provide more detailed feedback on student performance."
+}
+
+### ===== STEP 13: ADMIN ERROR TESTING =====
+
+### 13.1 Create User with Invalid Data
+POST {{baseUrl}}/api/admin/users
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "userType": "invalid",
+    "email": "invalid-email",
+    "password": "123"
+}
+
+### 13.2 Access Admin with Student Token
+GET {{baseUrl}}/api/admin/dashboard
+Authorization: Bearer {{student_token}}
+
+### 13.3 Update Non-existent User
+PATCH {{baseUrl}}/api/admin/users/invalid-id?userType=student
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "fullName": "Test Update"
+}
+
+### 13.4 Create Semester with Invalid Dates
+POST {{baseUrl}}/api/admin/semesters
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+    "semester": "2024-3",
+    "startDate": "2024-12-01",
+    "endDate": "2024-11-01"
+}
