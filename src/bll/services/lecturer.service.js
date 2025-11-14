@@ -10,16 +10,6 @@ class LecturerService {
     return lecturer.assignedStudents;
   }
 
-  // Phản hồi báo cáo tiến độ của sinh viên
-  async respondToProgress(progressId, lecturerId, message) {
-    // Ở đây bạn có thể lưu phản hồi vào progress report hoặc 1 collection riêng
-    // Giả sử trong progress.repository có hàm addFeedback(progressId, lecturerId, message)
-    // Nếu chưa có, cần implement hoặc lưu trong Evaluation nếu phù hợp
-
-    // Placeholder: Cần implement sau với progressRepository
-    throw new Error("Method respondToProgress chưa được implement");
-  }
-
   // Đánh giá sinh viên (cho report hoặc tổng thể)
   async evaluateStudent({
     studentId,

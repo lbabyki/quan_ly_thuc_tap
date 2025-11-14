@@ -1,5 +1,4 @@
-// src/dal/repositories/lecturer.repository.js
-import BaseRepository from "../../core/base/BaseRepository.js";
+import { BaseRepository } from "../../core/base/BaseRepository.js";
 import Lecturer from "../models/lecturer.model.js";
 
 class LecturerRepository extends BaseRepository {

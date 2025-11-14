@@ -1,4 +1,4 @@
-import BaseRepository from "../../core/base/BaseRepository.js";
+import { BaseRepository } from "../../core/base/BaseRepository.js";
 import DefenseSchedule from "../models/defenseSchedule.model.js";
 
 class DefenseScheduleRepository extends BaseRepository {

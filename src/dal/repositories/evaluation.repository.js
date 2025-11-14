@@ -1,4 +1,4 @@
-import BaseRepository from "../../core/base/BaseRepository.js";
+import { BaseRepository } from "../../core/base/BaseRepository.js";
 import Evaluation from "../models/evaluation.model.js";
 
 class EvaluationRepository extends BaseRepository {

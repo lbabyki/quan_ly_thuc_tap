@@ -1,11 +1,11 @@
 import express from "express";
-import auth from "../../middleware/auth.middleware.js";
+import { authMiddleware } from "../../middleware/auth.middleware.js";
 import LecturerController from "../controllers/lecturer.controller.js";
 
 const router = express.Router();
 
 // Middleware xác thực lecturer role
-router.use(auth("lecturer"));
+router.use(authMiddleware("lecturer"));
 
 // Lấy danh sách sinh viên được gán
 router.get("/students", LecturerController.getAssignedStudents);
