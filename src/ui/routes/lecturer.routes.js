@@ -49,5 +49,9 @@ router.post(
   "/progress/:progressId/respond",
   LecturerController.respondToProgress
 );
+// Nhập điểm đánh giá cho sinh viên
+router.post("/evaluate/:studentId", LecturerController.evaluateStudent);
 
+// Lấy tất cả đánh giá do lecturer thực hiện
+router.get("/evaluations", LecturerController.getEvaluations);
 export default router;

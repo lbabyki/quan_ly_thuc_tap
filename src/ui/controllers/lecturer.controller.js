@@ -141,7 +141,48 @@ class LecturerController {
       next(err);
     }
   }
-  s;
+  async evaluateStudent(req, res, next) {
+    try {
+      const lecturerId = req.user.id;
+      const studentId = req.params.studentId;
+      const {
+        progressReportId,
+        scoreProcess,
+        scoreReport,
+        scoreDefense,
+        comments,
+      } = req.body;
+
+      // Validate đơn giản ở đây, hoặc dùng Joi ở validator
+      await evaluationSchema.validateAsync(req.body);
+
+      const evaluation = await LecturerService.evaluateStudent({
+        studentId,
+        lecturerId,
+        progressReportId,
+        scoreProcess,
+        scoreReport,
+        scoreDefense,
+        comments,
+      });
+
+      res.status(201).json({ success: true, data: evaluation });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getEvaluations(req, res, next) {
+    try {
+      const lecturerId = req.user.id;
+      const evaluations = await LecturerService.getEvaluationsByLecturer(
+        lecturerId
+      );
+      res.json({ success: true, data: evaluations });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new LecturerController();

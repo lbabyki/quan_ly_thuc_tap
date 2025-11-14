@@ -91,6 +91,45 @@ class LecturerService {
 
     return updatedProgress;
   }
+  async evaluateStudent({
+    studentId,
+    lecturerId,
+    progressReportId = null,
+    scoreProcess = null,
+    scoreReport = null,
+    scoreDefense = null,
+    comments = "",
+  }) {
+    // Kiểm tra xem đã có đánh giá nào cho report này chưa (nếu progressReportId có)
+    if (progressReportId) {
+      let existingEval = await EvaluationRepository.getByReport(
+        progressReportId
+      );
+      if (existingEval) {
+        // Cập nhật điểm đánh giá
+        existingEval.scoreProcess = scoreProcess ?? existingEval.scoreProcess;
+        existingEval.scoreReport = scoreReport ?? existingEval.scoreReport;
+        existingEval.scoreDefense = scoreDefense ?? existingEval.scoreDefense;
+        existingEval.comments = comments || existingEval.comments;
+        return existingEval.save();
+      }
+    }
+    // Nếu chưa có đánh giá cho report đó hoặc không có report, tạo mới
+    const evaluation = await EvaluationRepository.model.create({
+      student: studentId,
+      lecturer: lecturerId,
+      progressReport: progressReportId,
+      scoreProcess,
+      scoreReport,
+      scoreDefense,
+      comments,
+    });
+    return evaluation;
+  }
+
+  async getEvaluationsByLecturer(lecturerId) {
+    return EvaluationRepository.getByLecturer(lecturerId);
+  }
 }
 
 export default new LecturerService();
