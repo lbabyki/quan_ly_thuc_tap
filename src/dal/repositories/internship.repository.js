@@ -1,4 +1,3 @@
-// src/dal/repositories/internship.repository.js
 import { BaseRepository } from "../../core/base/BaseRepository.js";
 import Internship from "../models/internship.model.js";
 

@@ -1,4 +1,3 @@
-// src/dal/models/internship.model.js
 import mongoose from "mongoose";
 
 const internshipSchema = new mongoose.Schema(
