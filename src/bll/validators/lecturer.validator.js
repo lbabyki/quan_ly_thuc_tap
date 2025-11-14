@@ -6,3 +6,17 @@ export const defenseScheduleSchema = Joi.object({
   location: Joi.string().required(),
   notes: Joi.string().optional().allow(""),
 });
+export const addStudentToDefenseSchema = Joi.object({
+  scheduleId: Joi.string().required(),
+  studentId: Joi.string().required(),
+});
+
+export const finalizeDefenseSchema = Joi.object({
+  scheduleId: Joi.string().required(),
+  minutes: Joi.string().required(),
+});
+export const respondToProgressSchema = Joi.object({
+  progressId: Joi.string().required(),
+  lecturerId: Joi.string().required(),
+  message: Joi.string().min(1).required(),
+});

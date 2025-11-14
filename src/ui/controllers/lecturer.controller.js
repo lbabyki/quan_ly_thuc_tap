@@ -1,50 +1,11 @@
 import LecturerService from "../../bll/services/lecturer.service.js";
+import { evaluationSchema } from "../../bll/validators/evaluation.validator.js";
 
 class LecturerController {
   async getAssignedStudents(req, res, next) {
     try {
       const students = await LecturerService.getAssignedStudents(req.user.id);
       res.json({ success: true, data: students });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async evaluateStudent(req, res, next) {
-    try {
-      const lecturerId = req.user.id;
-      const studentId = req.params.studentId;
-      const {
-        progressReportId,
-        scoreProcess,
-        scoreReport,
-        scoreDefense,
-        comments,
-      } = req.body;
-
-      const evaluation = await LecturerService.evaluateStudent({
-        studentId,
-        lecturerId,
-        progressReportId,
-        scoreProcess,
-        scoreReport,
-        scoreDefense,
-        comments,
-      });
-
-      res.status(201).json({ success: true, data: evaluation });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async getEvaluations(req, res, next) {
-    try {
-      const lecturerId = req.user.id;
-      const evaluations = await LecturerService.getEvaluationsByLecturer(
-        lecturerId
-      );
-      res.json({ success: true, data: evaluations });
     } catch (err) {
       next(err);
     }

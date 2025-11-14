@@ -9,6 +9,7 @@ const LecturerSchema = new Schema({
   department: { type: String },
   role: { type: String, default: "lecturer" },
   assignedInternships: [{ type: Schema.Types.ObjectId, ref: "Internship" }],
+  assignedStudents: [{ type: Schema.Types.ObjectId, ref: "Student" }],
   createdAt: { type: Date, default: Date.now },
 });
 
