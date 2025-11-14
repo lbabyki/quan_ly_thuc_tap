@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 export const createUserValidator = Joi.object({
-  userType: Joi.string()
+  role: Joi.string()
     .valid("student", "lecturer", "company", "admin")
     .required(),
 
@@ -10,7 +10,7 @@ export const createUserValidator = Joi.object({
   password: Joi.string().min(6).required(),
 
   // Student/Lecturer fields
-  userName: Joi.string().when("userType", {
+  userName: Joi.string().when("role", {
     is: Joi.string().valid("student", "lecturer", "admin"),
     then: Joi.required(),
     otherwise: Joi.forbidden(),
@@ -18,24 +18,24 @@ export const createUserValidator = Joi.object({
   fullName: Joi.string().optional(),
   department: Joi.string().optional(),
   phone: Joi.string().optional(),
-  studentCode: Joi.string().when("userType", {
+  studentCode: Joi.string().when("role", {
     is: "student",
     then: Joi.optional(),
     otherwise: Joi.forbidden(),
   }),
 
   // Company fields
-  companyName: Joi.string().when("userType", {
+  companyName: Joi.string().when("role", {
     is: "company",
     then: Joi.required(),
     otherwise: Joi.forbidden(),
   }),
-  contactPerson: Joi.string().when("userType", {
+  contactPerson: Joi.string().when("role", {
     is: "company",
     then: Joi.required(),
     otherwise: Joi.forbidden(),
   }),
-  contactEmail: Joi.string().when("userType", {
+  contactEmail: Joi.string().when("role", {
     is: "company",
     then: Joi.string().email().required(),
     otherwise: Joi.forbidden(),

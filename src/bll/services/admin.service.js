@@ -25,14 +25,14 @@ export class AdminService {
     if (type === "all" || type === "students") {
       const students = await this.studentRepo.find({}, { skip, limit });
       users.push(
-        ...students.map((u) => ({ ...u.toObject(), userType: "student" }))
+        ...students.map((u) => ({ ...u.toObject(), role: "student" }))
       );
     }
 
     if (type === "all" || type === "companies") {
       const companies = await this.companyRepo.find({}, { skip, limit });
       users.push(
-        ...companies.map((u) => ({ ...u.toObject(), userType: "company" }))
+        ...companies.map((u) => ({ ...u.toObject(), role: "company" }))
       );
     }
 
@@ -40,20 +40,16 @@ export class AdminService {
   }
 
   async createUser(userData) {
-    const { userType, password, ...data } = userData;
+    const { role, password, ...data } = userData;
     const hashedPassword = await hashPassword(password);
 
-    if (
-      userType === "student" ||
-      userType === "lecturer" ||
-      userType === "admin"
-    ) {
+    if (role === "student" || role === "lecturer" || role === "admin") {
       return this.studentRepo.create({
         ...data,
         password: hashedPassword,
-        role: userType,
+        role: role,
       });
-    } else if (userType === "company") {
+    } else if (role === "company") {
       return this.companyRepo.create({
         ...data,
         password: hashedPassword,
@@ -64,29 +60,29 @@ export class AdminService {
     throw new AppError("Invalid user type", 400);
   }
 
-  async updateUser(userId, userType, updateData) {
+  async updateUser(userId, role, updateData) {
     if (updateData.password) {
       updateData.password = await hashPassword(updateData.password);
     }
 
-    if (userType === "company") {
+    if (role === "company") {
       return this.companyRepo.update(userId, updateData);
     } else {
       return this.studentRepo.update(userId, updateData);
     }
   }
 
-  async deleteUser(userId, userType) {
-    if (userType === "company") {
+  async deleteUser(userId, role) {
+    if (role === "company") {
       return this.companyRepo.delete(userId);
     } else {
       return this.studentRepo.delete(userId);
     }
   }
 
-  async resetPassword(userId, userType, newPassword = "123456") {
+  async resetPassword(userId, role, newPassword = "123456") {
     const hashedPassword = await hashPassword(newPassword);
-    return this.updateUser(userId, userType, { password: hashedPassword });
+    return this.updateUser(userId, role, { password: hashedPassword });
   }
 
   // ===== QUẢN LÝ ĐỀ TÀI & KỲ THỰC TẬP =====
