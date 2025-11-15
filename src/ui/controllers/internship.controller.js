@@ -37,7 +37,7 @@ export class InternshipController {
       }
 
       const updated = await service.registerByStudent(
-        req.user._id,
+        req.user.id,
         body.internshipId,
         docUrl
       );
@@ -60,7 +60,7 @@ export class InternshipController {
           message: error.details[0].message,
         });
 
-      const suggestion = await service.suggestTopic(req.user._id, req.body);
+      const suggestion = await service.suggestTopic(req.user.id, req.body);
       return sendSuccess(res, {
         status: 201,
         message: "Topic suggested",
@@ -74,7 +74,7 @@ export class InternshipController {
   // get my internship (student)
   static async my(req, res) {
     try {
-      const studentId = req.user._id;
+      const studentId = req.user.id;
       const internship = await service.getMyInternship(studentId);
       return sendSuccess(res, { data: internship });
     } catch (err) {
@@ -125,7 +125,7 @@ export class InternshipController {
   }
   static async cancelRegistration(req, res) {
     try {
-      const studentId = req.user._id;
+      const studentId = req.user.id;
       const result = await service.cancelRegistration(studentId);
       return sendSuccess(res, {
         message: "Registration cancelled successfully",

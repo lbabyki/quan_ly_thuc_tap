@@ -50,6 +50,8 @@ export class AuthService {
     switch (userRole) {
       case "student":
       case "lecturer":
+        user = await Lecturer.findById(userId).select("-password");
+        break;
       case "admin":
         user = await Student.findById(userId).select("-password");
         break;

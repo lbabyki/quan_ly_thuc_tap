@@ -9,7 +9,7 @@ import {
 class LecturerController {
   async getAssignedStudents(req, res) {
     try {
-      const lecturerId = req.user._id;
+      const lecturerId = req.user.id;
       const students = await lecturerService.getAssignedStudents(lecturerId);
       return sendSuccess(res, { data: students });
     } catch (err) {
@@ -20,7 +20,7 @@ class LecturerController {
   async evaluateStudent(req, res) {
     try {
       const { studentId } = req.params;
-      const lecturerId = req.user._id;
+      const lecturerId = req.user.id;
       const evaluation = await lecturerService.evaluateStudent(
         lecturerId,
         studentId,
@@ -37,7 +37,7 @@ class LecturerController {
 
   async getEvaluations(req, res) {
     try {
-      const lecturerId = req.user._id;
+      const lecturerId = req.user.id;
       const evaluations = await lecturerService.getEvaluations(lecturerId);
       return sendSuccess(res, { data: evaluations });
     } catch (err) {
@@ -48,7 +48,7 @@ class LecturerController {
   // NEW: Defense Schedule methods
   async getDefenseSchedules(req, res) {
     try {
-      const lecturerId = req.user._id;
+      const lecturerId = req.user.id;
       const schedules = await lecturerService.getDefenseSchedules(lecturerId);
       return sendSuccess(res, { data: schedules });
     } catch (err) {
@@ -65,7 +65,7 @@ class LecturerController {
           message: error.details[0].message,
         });
 
-      const lecturerId = req.user._id;
+      const lecturerId = req.user.id;
       const schedule = await lecturerService.createDefenseSchedule(
         lecturerId,
         req.body

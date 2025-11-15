@@ -3,7 +3,7 @@
 ### Nguyễn văn A Token
 @student_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTc5NmUzYTY2YjI2OTU0MDk0NTU5ZSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MzE1ODU5NywiZXhwIjoxNzYzNzYzMzk3fQ.FhO3nhV5MkYUlWuhMkcx6QI8GyCa9UIWvjIrVyL-kXw
 @lecturer_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTc5NmUzYTY2YjI2OTU0MDk0NTVhNCIsInJvbGUiOiJsZWN0dXJlciIsImlhdCI6MTc2MzE1MzY3OSwiZXhwIjoxNzYzNzU4NDc5fQ.tNbszychRNWrYfkUKLuroE1EXqxGhWn-DvIlom3kXbY
-@admin_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTc3YWU5N2QzZWFhYWFjZDFmMzFhOCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MzE0NjY2OCwiZXhwIjoxNzYzNzUxNDY4fQ.p03eryI2EfZ0uAY2H4G0Fkc0Sc3BtZ-bwCfY5AQSOcQ
+@admin_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTdjMjFlMTdkNTZjYzE3NDQxYzViOCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MzE2NDczNywiZXhwIjoxNzYzNzY5NTM3fQ.fjeYvTswYSI4n6o6TgiQYLBbIyitU5y1vkkYKIwrSSc
 ### Nguyễn văn A ID
 @student_id = 691790f7baea7f1fb0492587
 
@@ -561,3 +561,24 @@ Authorization: Bearer {{admin_token}}
 
 ###Test doc swagger
 GET {{baseUrl}}/api-docs
+
+###
+GET {{baseUrl}}/api/admin/dashboard
+Authorization: Bearer {{admin_token}}
+
+###
+GET {{baseUrl}}/api/admin/analytics
+Authorization: Bearer {{admin_token}}
+
+###
+POST {{baseUrl}}/api/progress 
+Authorization: Bearer {{student_token}}
+Content-Type: application/json
+
+{
+    "week": 1,
+    "title": "Week 1 Progress Report",
+    "content": "This week I completed the project setup and initial research. Key achievements include setting up development environment, studying existing solutions, and creating project timeline.",
+    "reportType": "weekly",
+    "internship": "{{internship_id}}"
+}

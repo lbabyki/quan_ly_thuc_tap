@@ -145,7 +145,6 @@ export class AdminService {
       this.reportRepo.count({ status: "submitted" }),
       this.internshipRepo.count({ status: "open" }),
     ]);
-
     return {
       totalStudents,
       totalCompanies,

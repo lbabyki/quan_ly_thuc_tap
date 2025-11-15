@@ -7,7 +7,7 @@ export const progressValidator = Joi.object({
   reportType: Joi.string()
     .valid("weekly", "monthly", "final")
     .default("weekly"),
-  internship: Joi.string().optional(), // Có thể lấy từ user profile
+  internship: Joi.string().required(), // Bắt buộc phải có
 });
 
 export const statusUpdateValidator = Joi.object({

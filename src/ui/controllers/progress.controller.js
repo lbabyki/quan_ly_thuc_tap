@@ -14,7 +14,8 @@ export class ProgressController {
 
       const payload = {
         ...req.body,
-        student: req.user._id,
+        student: req.user.id,
+        internship: req.body.internship || req.user.internship, // Thêm internship
         attachments: req.files ? req.files.map((file) => file.filename) : [],
       };
 
@@ -32,7 +33,7 @@ export class ProgressController {
   // Lấy danh sách progress của student hiện tại
   static async myList(req, res) {
     try {
-      const studentId = req.user._id;
+      const studentId = req.user.id;
       const progressList = await progressService.listByStudent(studentId);
       return sendSuccess(res, { data: progressList });
     } catch (err) {
@@ -43,7 +44,7 @@ export class ProgressController {
   // Lấy progress của student theo tuần
   static async myProgressByWeek(req, res) {
     try {
-      const studentId = req.user._id;
+      const studentId = req.user.id;
       const { week } = req.params;
       const progress = await progressService.listByStudentAndWeek(
         studentId,

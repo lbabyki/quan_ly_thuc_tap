@@ -9,6 +9,9 @@ import Internship from "../dal/models/internship.model.js";
 import Progress from "../dal/models/progress.model.js";
 import CompanyReport from "../dal/models/companyReport.model.js";
 import SystemConfig from "../dal/models/systemConfig.model.js";
+import Evaluation from "../dal/models/evaluation.model.js";
+import DefenseSchedule from "../dal/models/defenseSchedule.model.js";
+import Notification from "../dal/models/notification.model.js";
 import { hashPassword } from "../utils/hash.js";
 
 const seedData = async () => {
@@ -19,11 +22,15 @@ const seedData = async () => {
     // Clear existing data
     await Promise.all([
       Student.deleteMany({}),
+      Lecturer.deleteMany({}),
       Company.deleteMany({}),
       Internship.deleteMany({}),
       Progress.deleteMany({}),
       CompanyReport.deleteMany({}),
       SystemConfig.deleteMany({}),
+      Evaluation.deleteMany({}),
+      DefenseSchedule.deleteMany({}),
+      Notification.deleteMany({}),
     ]);
     console.log("🧹 Cleared existing data");
 
@@ -42,7 +49,7 @@ const seedData = async () => {
     });
     console.log("✅ Admin created:", admin.email);
 
-    // 2. CREATE STUDENTS
+    // 2. CREATE STUDENTS (Expanded)
     const students = await Student.insertMany([
       {
         userName: "Nguyen Van A",
@@ -56,6 +63,8 @@ const seedData = async () => {
         status: "approved",
         skills: ["JavaScript", "React", "Node.js"],
         year: 4,
+        gpa: 3.8,
+        cv: "cv_nguyen_van_a.pdf",
       },
       {
         userName: "Tran Thi B",
@@ -69,6 +78,8 @@ const seedData = async () => {
         status: "approved",
         skills: ["Python", "Django", "PostgreSQL"],
         year: 3,
+        gpa: 3.6,
+        cv: "cv_tran_thi_b.pdf",
       },
       {
         userName: "Le Van C",
@@ -82,11 +93,40 @@ const seedData = async () => {
         status: "pending",
         skills: ["Java", "Spring Boot", "MySQL"],
         year: 4,
+        gpa: 3.9,
+      },
+      {
+        userName: "Pham Thi D",
+        email: "student4@gmail.com",
+        password: hashedPassword,
+        role: "student",
+        fullName: "Pham Thi D",
+        department: "Computer Science",
+        studentCode: "SV004",
+        phone: "0456789123",
+        status: "approved",
+        skills: ["C#", ".NET", "SQL Server"],
+        year: 3,
+        gpa: 3.7,
+      },
+      {
+        userName: "Hoang Van E",
+        email: "student5@gmail.com",
+        password: hashedPassword,
+        role: "student",
+        fullName: "Hoang Van E",
+        department: "Information Technology",
+        studentCode: "SV005",
+        phone: "0789123456",
+        status: "approved",
+        skills: ["PHP", "Laravel", "Vue.js"],
+        year: 4,
+        gpa: 3.5,
       },
     ]);
     console.log("✅ Students created:", students.length);
 
-    // 3. CREATE LECTURERS
+    // 3. CREATE LECTURERS (Expanded)
     const lecturers = await Lecturer.insertMany([
       {
         name: "Dr. Nguyen Van B",
@@ -97,6 +137,8 @@ const seedData = async () => {
         department: "Computer Science",
         phone: "0123456789",
         status: "approved",
+        specialization: "Software Engineering",
+        experience: 10,
       },
       {
         name: "Dr. Pham Thi C",
@@ -107,11 +149,25 @@ const seedData = async () => {
         department: "Information Technology",
         phone: "0987654321",
         status: "approved",
+        specialization: "Database Systems",
+        experience: 8,
+      },
+      {
+        name: "Dr. Le Van D",
+        email: "lecturer3@gmail.com",
+        password: hashedPassword,
+        role: "lecturer",
+        fullName: "Dr. Le Van D",
+        department: "Software Engineering",
+        phone: "0456123789",
+        status: "approved",
+        specialization: "Web Development",
+        experience: 12,
       },
     ]);
     console.log("✅ Lecturers created:", lecturers.length);
 
-    // 4. CREATE COMPANIES
+    // 4. CREATE COMPANIES (Expanded)
     const companies = await Company.insertMany([
       {
         companyName: "FPT Software",
@@ -121,6 +177,9 @@ const seedData = async () => {
         contactPhone: "0901234567",
         address: "FPT Tower, Ho Chi Minh City",
         status: "active",
+        website: "https://www.fpt-software.com",
+        industry: "Software Development",
+        size: "1000+",
       },
       {
         companyName: "VNG Corporation",
@@ -130,6 +189,9 @@ const seedData = async () => {
         contactPhone: "0902345678",
         address: "VNG Campus, Ho Chi Minh City",
         status: "active",
+        website: "https://www.vng.com.vn",
+        industry: "Technology",
+        size: "500-1000",
       },
       {
         companyName: "Tiki Corporation",
@@ -139,11 +201,26 @@ const seedData = async () => {
         contactPhone: "0903456789",
         address: "Tiki Building, Ho Chi Minh City",
         status: "active",
+        website: "https://tiki.vn",
+        industry: "E-commerce",
+        size: "200-500",
+      },
+      {
+        companyName: "Shopee Vietnam",
+        contactPerson: "Nguyen Thi Manager",
+        contactEmail: "shopee@gmail.com",
+        password: hashedPassword,
+        contactPhone: "0904567890",
+        address: "Shopee Building, Ho Chi Minh City",
+        status: "active",
+        website: "https://shopee.vn",
+        industry: "E-commerce",
+        size: "500-1000",
       },
     ]);
     console.log("✅ Companies created:", companies.length);
 
-    // 5. CREATE INTERNSHIPS
+    // 5. CREATE INTERNSHIPS (Expanded)
     const internships = await Internship.insertMany([
       {
         companyName: "FPT Software",
@@ -156,6 +233,10 @@ const seedData = async () => {
         students: [students[0]._id],
         startDate: new Date("2024-08-01"),
         endDate: new Date("2024-11-30"),
+        requirements: ["JavaScript", "React", "HTML/CSS"],
+        maxStudents: 3,
+        description: "Develop modern web applications using React",
+        benefits: ["Salary: 5M VND/month", "Training", "Certificate"],
       },
       {
         companyName: "VNG Corporation",
@@ -168,6 +249,10 @@ const seedData = async () => {
         students: [],
         startDate: new Date("2024-09-01"),
         endDate: new Date("2024-12-31"),
+        requirements: ["Node.js", "Python", "Database"],
+        maxStudents: 2,
+        description: "Work on backend systems and APIs",
+        benefits: ["Salary: 6M VND/month", "Mentorship", "Full-time offer"],
       },
       {
         companyName: "Tiki Corporation",
@@ -180,6 +265,26 @@ const seedData = async () => {
         students: [students[1]._id],
         startDate: new Date("2024-08-15"),
         endDate: new Date("2024-12-15"),
+        requirements: ["JavaScript", "React", "Node.js", "MongoDB"],
+        maxStudents: 2,
+        description: "E-commerce platform development",
+        benefits: ["Salary: 5.5M VND/month", "Product training"],
+      },
+      {
+        companyName: "Shopee Vietnam",
+        position: "Mobile Developer Intern",
+        contactPerson: "Nguyen Thi Manager",
+        contactEmail: "shopee@gmail.com",
+        contactPhone: "0904567890",
+        address: "Shopee Building, Ho Chi Minh City",
+        status: "open",
+        students: [],
+        startDate: new Date("2024-09-15"),
+        endDate: new Date("2024-12-31"),
+        requirements: ["React Native", "Flutter", "Mobile Development"],
+        maxStudents: 2,
+        description: "Mobile app development for e-commerce",
+        benefits: ["Salary: 6M VND/month", "Device provided"],
       },
       {
         companyName: "Student Suggestion",
@@ -193,6 +298,8 @@ const seedData = async () => {
         students: [],
         startDate: new Date("2024-09-01"),
         endDate: new Date("2024-12-31"),
+        requirements: ["Python", "Machine Learning", "NLP"],
+        maxStudents: 1,
       },
     ]);
     console.log("✅ Internships created:", internships.length);
@@ -200,12 +307,14 @@ const seedData = async () => {
     // Update student internship assignments
     await Student.findByIdAndUpdate(students[0]._id, {
       internshipCompany: internships[0]._id,
+      supervisor: lecturers[0]._id,
     });
     await Student.findByIdAndUpdate(students[1]._id, {
       internshipCompany: internships[2]._id,
+      supervisor: lecturers[1]._id,
     });
 
-    // 6. CREATE PROGRESS REPORTS
+    // 6. CREATE PROGRESS REPORTS (Expanded)
     const progressReports = await Progress.insertMany([
       {
         student: students[0]._id,
@@ -216,6 +325,8 @@ const seedData = async () => {
         reportType: "weekly",
         status: "submitted",
         internship: internships[0]._id,
+        attachments: ["week1_setup.pdf", "timeline.xlsx"],
+        submittedAt: new Date("2024-08-08"),
       },
       {
         student: students[0]._id,
@@ -226,6 +337,12 @@ const seedData = async () => {
         reportType: "weekly",
         status: "reviewed",
         internship: internships[0]._id,
+        attachments: ["week2_ui_mockups.png"],
+        submittedAt: new Date("2024-08-15"),
+        reviewedAt: new Date("2024-08-17"),
+        reviewedBy: lecturers[0]._id,
+        feedback:
+          "Good progress on UI development. Consider adding unit tests.",
       },
       {
         student: students[1]._id,
@@ -236,11 +353,144 @@ const seedData = async () => {
         reportType: "weekly",
         status: "submitted",
         internship: internships[2]._id,
+        attachments: ["api_documentation.pdf"],
+        submittedAt: new Date("2024-08-22"),
+      },
+      {
+        student: students[0]._id,
+        week: 12,
+        title: "Final Report - Frontend Development Project",
+        content:
+          "Complete summary of 12-week internship. Successfully delivered a responsive web application with modern UI/UX design, user authentication, and real-time features.",
+        reportType: "final",
+        status: "submitted",
+        internship: internships[0]._id,
+        attachments: [
+          "final_report.pdf",
+          "project_demo.mp4",
+          "source_code.zip",
+        ],
+        submittedAt: new Date("2024-11-25"),
       },
     ]);
     console.log("✅ Progress reports created:", progressReports.length);
 
-    // 7. CREATE COMPANY REPORTS
+    // 7. CREATE EVALUATIONS
+    const evaluations = await Evaluation.insertMany([
+      {
+        student: students[0]._id,
+        lecturer: lecturers[0]._id,
+        progressReport: progressReports[0]._id,
+        scoreProcess: 8.5,
+        scoreReport: 8.0,
+        scoreDefense: 8.5,
+        comments:
+          "Excellent technical skills and good learning attitude. Shows strong problem-solving abilities.",
+      },
+      {
+        student: students[0]._id,
+        lecturer: lecturers[0]._id,
+        progressReport: progressReports[1]._id,
+        scoreProcess: 8.0,
+        scoreReport: 7.5,
+        scoreDefense: 8.0,
+        comments: "Good performance overall. Delivered quality work on time.",
+      },
+      {
+        student: students[1]._id,
+        lecturer: lecturers[1]._id,
+        progressReport: progressReports[2]._id,
+        scoreProcess: 9.0,
+        scoreReport: 8.5,
+        scoreDefense: 9.0,
+        comments:
+          "Outstanding performance. Demonstrates excellent technical and soft skills.",
+      },
+    ]);
+    console.log("✅ Evaluations created:", evaluations.length);
+
+    // 8. CREATE DEFENSE SCHEDULES
+    const defenseSchedules = await DefenseSchedule.insertMany([
+      {
+        title: "Final Defense - Batch 1",
+        date: new Date("2024-12-16"),
+        startTime: "08:00",
+        endTime: "12:00",
+        location: "Room A101",
+        lecturer: lecturers[0]._id,
+        students: [students[0]._id],
+        status: "scheduled",
+        semester: "2024-2",
+        notes: "Morning session for Computer Science students",
+      },
+      {
+        title: "Final Defense - Batch 2",
+        date: new Date("2024-12-17"),
+        startTime: "14:00",
+        endTime: "18:00",
+        location: "Room B202",
+        lecturer: lecturers[1]._id,
+        students: [students[1]._id],
+        status: "scheduled",
+        semester: "2024-2",
+        notes: "Afternoon session for IT students",
+      },
+      {
+        title: "Midterm Defense - Batch 1",
+        date: new Date("2024-10-15"),
+        startTime: "09:00",
+        endTime: "11:00",
+        location: "Room C303",
+        lecturer: lecturers[2]._id,
+        students: [students[2]._id, students[3]._id],
+        status: "completed",
+        semester: "2024-2",
+        notes: "Midterm evaluation session",
+      },
+    ]);
+    console.log("✅ Defense schedules created:", defenseSchedules.length);
+
+    // 9. CREATE NOTIFICATIONS
+    const notifications = await Notification.insertMany([
+      {
+        recipient: students[0]._id,
+        recipientModel: "Student",
+        title: "Progress Report Reminder",
+        message: "Your weekly progress report for Week 3 is due tomorrow.",
+        type: "info",
+        read: false,
+      },
+      {
+        recipient: students[1]._id,
+        recipientModel: "Student",
+        title: "Defense Schedule Notification",
+        message:
+          "Your final defense has been scheduled for December 17, 2024 at 2:00 PM in Room B202.",
+        type: "info",
+        read: false,
+      },
+      {
+        recipient: lecturers[0]._id,
+        recipientModel: "Lecturer",
+        title: "New Progress Report Submitted",
+        message:
+          "Nguyen Van A has submitted Week 2 progress report for review.",
+        type: "info",
+        read: true,
+      },
+      {
+        recipient: companies[0]._id,
+        recipientModel: "Company",
+        title: "Student Evaluation Request",
+        message:
+          "Please provide evaluation for your intern Nguyen Van A before November 30, 2024.",
+        type: "warning",
+        read: false,
+      },
+    ]);
+    console.log("✅ Notifications created:", notifications.length);
+
+    // 10. CREATE COMPANY REPORTS (Expanded)
     const companyReports = await CompanyReport.insertMany([
       {
         company: companies[0]._id,
@@ -266,7 +516,7 @@ const seedData = async () => {
           futureCollaboration: true,
         },
         status: "submitted",
-        submittedAt: new Date(),
+        submittedAt: new Date("2024-11-30"),
       },
       {
         company: companies[1]._id,
@@ -290,15 +540,39 @@ const seedData = async () => {
           futureCollaboration: true,
         },
         status: "approved",
-        submittedAt: new Date(),
-        reviewedAt: new Date(),
+        submittedAt: new Date("2024-11-25"),
+        reviewedAt: new Date("2024-12-01"),
         reviewedBy: admin._id,
         adminNotes: "Excellent feedback from VNG. Approved.",
+      },
+      {
+        company: companies[2]._id,
+        semester: "2024-2",
+        year: 2024,
+        overallAssessment: {
+          totalStudents: 1,
+          completedStudents: 0,
+          averagePerformance: 8.0,
+          recommendedStudents: [],
+        },
+        detailedFeedback: {
+          strengths: "Good technical foundation and willingness to learn",
+          weaknesses: "Needs more time to adapt to company culture",
+          suggestions: "Extend internship duration for better results",
+          cooperationQuality: "good",
+        },
+        improvements: {
+          curriculumSuggestions: "Add e-commerce specific modules",
+          skillGaps: ["E-commerce platforms", "Payment systems"],
+          futureCollaboration: true,
+        },
+        status: "draft",
+        submittedAt: new Date("2024-12-05"),
       },
     ]);
     console.log("✅ Company reports created:", companyReports.length);
 
-    // 8. CREATE SYSTEM CONFIG
+    // 11. CREATE SYSTEM CONFIG (Updated)
     const systemConfig = await SystemConfig.create({
       semester: "2024-2",
       startDate: new Date("2024-08-01"),
@@ -321,26 +595,70 @@ const seedData = async () => {
     });
     console.log("✅ System config created:", systemConfig.semester);
 
-    // 9. PRINT SAMPLE IDs FOR TESTING
-    console.log("\n🎯 SAMPLE IDs FOR TESTING:");
-    console.log("=".repeat(50));
+    // 12. PRINT COMPREHENSIVE SAMPLE DATA
+    console.log("\n🎯 COMPREHENSIVE SAMPLE IDs FOR TESTING:");
+    console.log("=".repeat(60));
     console.log(`Admin ID: ${admin._id}`);
-    console.log(`Student ID: ${students[0]._id}`);
-    console.log(`Lecturer ID: ${lecturers[0]._id}`);
-    console.log(`Company ID: ${companies[0]._id}`);
-    console.log(`Internship ID: ${internships[0]._id}`);
-    console.log(`Progress ID: ${progressReports[0]._id}`);
-    console.log(`Company Report ID: ${companyReports[0]._id}`);
+    console.log(`Student IDs: ${students.map((s) => s._id).join(", ")}`);
+    console.log(`Lecturer IDs: ${lecturers.map((l) => l._id).join(", ")}`);
+    console.log(`Company IDs: ${companies.map((c) => c._id).join(", ")}`);
+    console.log(`Internship IDs: ${internships.map((i) => i._id).join(", ")}`);
+    console.log(
+      `Progress IDs: ${progressReports.map((p) => p._id).join(", ")}`
+    );
+    console.log(`Evaluation IDs: ${evaluations.map((e) => e._id).join(", ")}`);
+    console.log(
+      `Defense IDs: ${defenseSchedules.map((d) => d._id).join(", ")}`
+    );
+    console.log(
+      `Notification IDs: ${notifications.map((n) => n._id).join(", ")}`
+    );
+    console.log(
+      `Company Report IDs: ${companyReports.map((cr) => cr._id).join(", ")}`
+    );
     console.log(`Semester ID: ${systemConfig._id}`);
-    console.log("=".repeat(50));
+    console.log("=".repeat(60));
 
-    console.log("\n📧 LOGIN CREDENTIALS:");
-    console.log("=".repeat(50));
-    console.log("Admin: admin@gmail.com / 123456");
-    console.log("Student: student@gmail.com / 123456");
-    console.log("Lecturer: lecturer@gmail.com / 123456");
-    console.log("Company: fpt@gmail.com / 123456");
-    console.log("=".repeat(50));
+    console.log("\n📧 COMPREHENSIVE LOGIN CREDENTIALS:");
+    console.log("=".repeat(60));
+    console.log("🔑 ADMIN:");
+    console.log("   Email: admin@gmail.com | Password: 123456");
+    console.log("\n👨‍🎓 STUDENTS:");
+    console.log(
+      "   Email: student@gmail.com | Password: 123456 (Has internship)"
+    );
+    console.log(
+      "   Email: student2@gmail.com | Password: 123456 (Has internship)"
+    );
+    console.log(
+      "   Email: student3@gmail.com | Password: 123456 (Pending status)"
+    );
+    console.log("   Email: student4@gmail.com | Password: 123456");
+    console.log("   Email: student5@gmail.com | Password: 123456");
+    console.log("\n👨‍🏫 LECTURERS:");
+    console.log("   Email: lecturer@gmail.com | Password: 123456");
+    console.log("   Email: lecturer2@gmail.com | Password: 123456");
+    console.log("   Email: lecturer3@gmail.com | Password: 123456");
+    console.log("\n🏢 COMPANIES:");
+    console.log("   Email: fpt@gmail.com | Password: 123456");
+    console.log("   Email: vng@gmail.com | Password: 123456");
+    console.log("   Email: tiki@gmail.com | Password: 123456");
+    console.log("   Email: shopee@gmail.com | Password: 123456");
+    console.log("=".repeat(60));
+
+    console.log("\n📊 DATA SUMMARY:");
+    console.log("=".repeat(60));
+    console.log(`✅ Total Students: ${students.length + 1} (including admin)`);
+    console.log(`✅ Total Lecturers: ${lecturers.length}`);
+    console.log(`✅ Total Companies: ${companies.length}`);
+    console.log(`✅ Total Internships: ${internships.length}`);
+    console.log(`✅ Total Progress Reports: ${progressReports.length}`);
+    console.log(`✅ Total Evaluations: ${evaluations.length}`);
+    console.log(`✅ Total Defense Schedules: ${defenseSchedules.length}`);
+    console.log(`✅ Total Notifications: ${notifications.length}`);
+    console.log(`✅ Total Company Reports: ${companyReports.length}`);
+    console.log(`✅ System Config: Active semester ${systemConfig.semester}`);
+    console.log("=".repeat(60));
   } catch (error) {
     console.error("❌ Error seeding data:", error.message);
   } finally {

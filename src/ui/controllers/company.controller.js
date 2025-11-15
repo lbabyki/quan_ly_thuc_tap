@@ -31,7 +31,7 @@ export class CompanyController {
 
   static async getStudents(req, res) {
     try {
-      const students = await service.getAssignedStudents(req.user._id);
+      const students = await service.getAssignedStudents(req.user.id);
       return sendSuccess(res, { data: students });
     } catch (err) {
       return sendError(res, { message: err.message });
@@ -41,7 +41,7 @@ export class CompanyController {
   static async evaluateStudent(req, res) {
     try {
       const evaluation = await service.evaluateStudent(
-        req.user._id,
+        req.user.id,
         req.params.id,
         req.body
       );
@@ -56,7 +56,7 @@ export class CompanyController {
 
   static async getProfile(req, res) {
     try {
-      const company = await service.getProfile(req.user._id);
+      const company = await service.getProfile(req.user.id);
       return sendSuccess(res, { data: company });
     } catch (err) {
       return sendError(res, { message: err.message });
@@ -65,7 +65,7 @@ export class CompanyController {
 
   static async updateProfile(req, res) {
     try {
-      const company = await service.updateProfile(req.user._id, req.body);
+      const company = await service.updateProfile(req.user.id, req.body);
       return sendSuccess(res, {
         message: "Profile updated successfully",
         data: company,
@@ -77,7 +77,7 @@ export class CompanyController {
 
   static async confirmStudent(req, res) {
     try {
-      await service.confirmStudent(req.user._id, req.params.id);
+      await service.confirmStudent(req.user.id, req.params.id);
       return sendSuccess(res, {
         message: "Student confirmed successfully",
       });
@@ -88,7 +88,7 @@ export class CompanyController {
 
   static async createReport(req, res) {
     try {
-      const report = await service.createCompanyReport(req.user._id, req.body);
+      const report = await service.createCompanyReport(req.user.id, req.body);
       return sendSuccess(res, {
         status: 201,
         message: "Report created successfully",
@@ -101,7 +101,7 @@ export class CompanyController {
 
   static async getMyReports(req, res) {
     try {
-      const reports = await service.getCompanyReports(req.user._id, req.query);
+      const reports = await service.getCompanyReports(req.user.id, req.query);
       return sendSuccess(res, { data: reports });
     } catch (err) {
       return sendError(res, { message: err.message });
