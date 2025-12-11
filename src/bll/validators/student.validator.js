@@ -10,3 +10,8 @@ export const profileValidator = Joi.object({
   year: Joi.number().integer().optional(),
   _id: Joi.forbidden(),
 });
+
+export const patchSchema = profileValidator.fork(
+  ["email", "password"],
+  (field) => field.optional()
+);

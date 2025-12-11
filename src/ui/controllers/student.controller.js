@@ -1,11 +1,14 @@
 import { sendSuccess, sendError } from "../../utils/response.js";
 import { StudentService } from "../../bll/services/student.service.js";
-import { profileValidator } from "../../bll/validators/student.validator.js";
+import {
+  patchSchema,
+  profileValidator,
+} from "../../bll/validators/student.validator.js";
 const studentService = new StudentService();
 export class StudentController {
   static async me(req, res) {
     try {
-      const user = await studentService.getStudentById(req.user._id);
+      const user = await studentService.getStudentById(req.user.id);
       if (!user) return sendError(res, { status: 404, message: "Not found" });
       user.password = undefined;
       return sendSuccess(res, { data: user });
@@ -16,7 +19,7 @@ export class StudentController {
   // start Khu vực updateme
   static async updateMe(req, res) {
     try {
-      const { error } = profileValidator.validate(req.body);
+      const { error } = patchSchema.validate(req.body);
       if (error)
         return sendError(res, {
           status: 400,
@@ -35,7 +38,7 @@ export class StudentController {
       if (!req.file)
         return sendError(res, { status: 400, message: "File required" });
       const url = `${req.protocol}://${req.get("host")}/${req.file.path}`;
-      const updated = await studentService.updateStudent(req.user._id, {
+      const updated = await studentService.updateStudent(req.user.id, {
         cvUrl: url,
       });
       updated.password = undefined;

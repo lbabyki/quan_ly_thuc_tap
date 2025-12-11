@@ -20,4 +20,7 @@ export class BaseRepository {
   async delete(id) {
     return this.model.findByIdAndDelete(id);
   }
+  async count(filter = {}) {
+    return this.model.countDocuments(filter);
+  }
 }

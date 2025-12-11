@@ -1,8 +1,10 @@
 import Student from "../../dal/models/student.model.js";
+import Lecturer from "../../dal/models/lecturer.model.js";
+import Company from "../../dal/models/company.model.js";
 import { hashPassword, comparePassword } from "../../utils/hash.js";
 import { signToken as generateToken } from "../../utils/token.js";
 import errorHandler from "../../middleware/error.middleware.js";
-
+import AppError from "../../utils/appError.js";
 export class AuthService {
   static async register(data, currentUser) {
     const { userName, email, password, role = "student" } = data;
@@ -30,13 +32,40 @@ export class AuthService {
   static async login(data) {
     const { email, password } = data;
 
-    const user = await Student.findOne({ email });
+    let user = await Student.findOne({ email });
+    if (!user) user = await Lecturer.findOne({ email });
     if (!user) throw new AppError("User not found", 404);
-
+    console.log("password:", password);
+    console.log("user password", user.password);
     const valid = await comparePassword(password, user.password);
     if (!valid) throw new AppError("Invalid credentials", 401);
 
     const token = generateToken({ id: user._id, role: user.role });
     return { user, token };
+  }
+
+  static async getUserProfile(userId, userRole) {
+    let user;
+
+    switch (userRole) {
+      case "student":
+      case "lecturer":
+        user = await Lecturer.findById(userId).select("-password");
+        break;
+      case "admin":
+        user = await Student.findById(userId).select("-password");
+        break;
+      case "company":
+        user = await Company.findById(userId).select("-password");
+        break;
+      default:
+        throw new AppError("Invalid user role", 400);
+    }
+
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    return user;
   }
 }

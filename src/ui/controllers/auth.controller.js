@@ -33,3 +33,15 @@ export const login = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getUserProfile = async (req, res, next) => {
+  try {
+    const user = await AuthService.getUserProfile(req.user.id, req.user.role);
+    sendSuccess(res, {
+      message: "Profile retrieved successfully",
+      data: user,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
